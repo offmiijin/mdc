@@ -1,0 +1,55 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2026 mdc contributors
+#
+# Build e teste. O gate de conformidade vive no workflow `compliance.yml`.
+# O job `core` é o gate obrigatório e não tem dependência de sistema — ele roda
+# em qualquer runner. O job `client` compila SDL3 e pode precisar de ajuste na
+# lista de pacotes conforme a imagem do runner.
+name: build
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  core:
+    name: núcleo + testes (sem GPU)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependências
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+      - name: Configurar
+        run: cmake --preset headless
+      - name: Compilar
+        run: cmake --build --preset headless
+      - name: Testar
+        run: ctest --preset headless
+
+  client:
+    name: cliente (SDL3)
+    runs-on: ubuntu-latest
+    # Não-bloqueante por enquanto: compila SDL3 do fonte e depende de uma lista
+    # de pacotes apt que ainda não foi validada em runner real. O gate obrigatório
+    # é o job `core` (sem dependência de sistema) + o workflow `compliance`.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependências de sistema para SDL3
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libasound2-dev libpulse-dev \
+            libudev-dev libx11-dev libxext-dev libxrandr-dev libxcursor-dev \
+            libxi-dev libxfixes-dev libwayland-dev libdecor-0-dev libegl1-mesa-dev
+      - name: Configurar (SDL3 via FetchContent)
+        run: cmake --preset ci
+      - name: Compilar
+        run: cmake --build --preset ci
+      - name: Testar
+        run: ctest --preset ci
+      - name: Critério do M0 sem GPU
+        run: ./build/ci/bin/mdc-client --headless --seconds=600

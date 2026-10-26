@@ -1,0 +1,69 @@
+{
+  "_comment": "Versao de referencia congelada. Ver docs/adr/0003-versao.md. Este arquivo NAO baixa nada e NAO versiona nada da Mojang: registra hashes para que qualquer um possa verificar a propria copia local.",
+  "minecraft": {
+    "edition": "java",
+    "version": "26.3",
+    "release_time": "2026-09-15T11:23:02+00:00",
+    "scheme": "anual (26.1, 26.2, 26.3, ... 27.1)",
+    "obfuscated": false,
+    "obfuscation_removed_since": "26.1",
+    "java_version": {
+      "component": "java-runtime-epsilon",
+      "major": 25
+    }
+  },
+  "metadata": {
+    "manifest_url": "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json",
+    "version_json_package_sha1": "61fff1316bd50312624a858bbb5eb18fa45208ed",
+    "accepted_version_json_package_sha1": [
+      "4fe1aa1ef8da1cb95c5bad1fb98890ca56dd8ca3",
+      "702fe59163c6ee6578607daa85811d9bc9c7cc40",
+      "61fff1316bd50312624a858bbb5eb18fa45208ed"
+    ],
+    "note": "A Mojang republicou o JSON do 26.3 mais de uma vez; apenas o assetIndex muda (traducoes). Jars e bibliotecas sao identicos."
+  },
+  "downloads": {
+    "client": {
+      "sha1": "e877b6a07acd633fb3bb475002175cec036e7b87",
+      "size": 41483720,
+      "note": "contem 100% do codigo Mojang: 11.383 classes (7.301 top-level + 4.082 internas)"
+    },
+    "server": {
+      "sha1": "33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c",
+      "size": 62294556,
+      "note": "bundler: 4 classes + 148 jars aninhados + server-26.3.jar interno (7.762 classes, subconjunto do client)"
+    },
+    "asset_index": {
+      "id": "34",
+      "sha1": "0c8f43b28f837869c1e54a6aeb22c396a1548946",
+      "size": 597035,
+      "objects": 5147,
+      "total_bytes": 484894038
+    }
+  },
+  "protocol": {
+    "version": 777,
+    "packets_by_phase": {
+      "handshake": 1,
+      "status": 2,
+      "login": 9,
+      "configuration": 7,
+      "game": 185,
+      "common": 20,
+      "cookie": 2,
+      "ping": 2
+    }
+  },
+  "data": {
+    "world_version": 5023,
+    "pack_version": {
+      "resource_major": 97,
+      "resource_minor": 1,
+      "data_major": 121,
+      "data_minor": 0
+    },
+    "libraries": 114
+  },
+  "verified_at": "2026-10-25",
+  "verified_by": "sha1 do client.jar conferido; jar assinado com META-INF/MOJANGCS.RSA"
+}

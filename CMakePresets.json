@@ -1,0 +1,72 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 24, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "dev",
+      "displayName": "Desenvolvimento (Debug, cliente + testes)",
+      "inherits": "base",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "MDC_BUILD_CLIENT": "ON",
+        "MDC_BUILD_TESTS": "ON",
+        "MDC_WERROR": "ON"
+      }
+    },
+    {
+      "name": "headless",
+      "displayName": "Sem SDL/GPU (só núcleo + testes)",
+      "inherits": "base",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "MDC_BUILD_CLIENT": "OFF",
+        "MDC_BUILD_TESTS": "ON"
+      }
+    },
+    {
+      "name": "ci",
+      "displayName": "CI (Release, avisos = erro)",
+      "inherits": "base",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "MDC_BUILD_CLIENT": "ON",
+        "MDC_BUILD_TESTS": "ON",
+        "MDC_WERROR": "ON",
+        "MDC_USE_SYSTEM_SDL3": "OFF"
+      }
+    }
+  ],
+  "buildPresets": [
+    { "name": "dev", "configurePreset": "dev" },
+    { "name": "headless", "configurePreset": "headless" },
+    { "name": "ci", "configurePreset": "ci" }
+  ],
+  "testPresets": [
+    {
+      "name": "dev",
+      "configurePreset": "dev",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "headless",
+      "configurePreset": "headless",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "ci",
+      "configurePreset": "ci",
+      "output": { "outputOnFailure": true }
+    }
+  ]
+}

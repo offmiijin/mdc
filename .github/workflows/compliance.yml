@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2026 mdc contributors
+name: compliance
+
+# Barreira 3 de 3: CI. Roda mesmo se alguém usar `git commit --no-verify`,
+# e é a única que olha o histórico inteiro.
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    name: propriedade intelectual
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # necessário para --history
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Testes do próprio gate
+        run: python3 tools/selftest_compliance.py
+
+      - name: Árvore de trabalho
+        run: python3 tools/check_compliance.py --all
+
+      - name: Histórico de commits
+        run: python3 tools/check_compliance.py --history
+
+      - name: Hooks instalados e executáveis
+        run: |
+          test -x .githooks/pre-commit || { echo "pre-commit não é executável"; exit 1; }
+          test -x .githooks/pre-push   || { echo "pre-push não é executável"; exit 1; }
+          git config core.hooksPath >/dev/null || true
+
+      - name: Aviso obrigatório no README
+        run: |
+          grep -q "NOT AN OFFICIAL MINECRAFT PRODUCT" README.md \
+            || { echo "README.md sem o aviso de não-oficial"; exit 1; }

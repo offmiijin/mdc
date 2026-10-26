@@ -1,0 +1,40 @@
+{
+  "_comment": "Excecoes do gate de conformidade. Cada entrada precisa de path, rule e reason. Ver docs/LEGAL.md secao 4.",
+  "entries": [
+    {
+      "path": "tools/check_compliance.py",
+      "rule": "R004",
+      "reason": "o proprio gate contem, como constantes, as assinaturas que procura"
+    },
+    {
+      "path": "tools/check_compliance.py",
+      "rule": "R005",
+      "reason": "idem: o cabecalho dos obfuscation maps e uma das assinaturas registradas"
+    },
+    {
+      "path": "tools/check_compliance.py",
+      "rule": "R006",
+      "reason": "idem: as URLs de distribuicao do jar sao assinaturas registradas"
+    },
+    {
+      "path": "tools/selftest_compliance.py",
+      "rule": "R004",
+      "reason": "testes do gate montam casos com as assinaturas que ele deve detectar"
+    },
+    {
+      "path": "tools/selftest_compliance.py",
+      "rule": "R005",
+      "reason": "idem"
+    },
+    {
+      "path": "tools/selftest_compliance.py",
+      "rule": "R006",
+      "reason": "idem"
+    },
+    {
+      "path": "refs/*",
+      "rule": "R006",
+      "reason": "lockfiles de referencia registram a URL oficial de origem dos hashes para auditoria; nao baixam nem versionam o jar"
+    }
+  ]
+}

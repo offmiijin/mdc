@@ -1,0 +1,66 @@
+# ─────────────────────────────────────────────────────────────
+# Material derivado do Minecraft NUNCA é versionado.
+# Ver docs/LEGAL.md. O gate tools/check_compliance.py reforça isto.
+# ─────────────────────────────────────────────────────────────
+.sandbox-cache/
+.local/
+decompiled/
+decomp/
+minecraft/
+versions/
+libraries/
+run/
+logs/
+saves/
+crash-reports/
+backups/
+*.jar
+*.class
+*.jfr
+*.hprof
+*.mca
+*.mcr
+*.nbt
+*.mcmeta
+*.mcassetsroot
+*.fsh
+*.vsh
+level.dat
+
+# Transcrição de harness (fixture) é material derivado do jogo: nunca versionar.
+# Ver docs/adr/0002-escopo.md e tools/oracle/README.md
+*.jsonl
+
+# ─── build ───
+build/
+out/
+bin/
+obj/
+dist/
+target/
+cmake-build-*/
+CMakeCache.txt
+CMakeFiles/
+compile_commands.json
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.pdb
+*.gcda
+*.gcno
+
+# ─── estado de ferramentas ───
+.pi/
+.idea/
+.vscode/
+.cache/
+__pycache__/
+*.py[cod]
+.DS_Store
+*.log

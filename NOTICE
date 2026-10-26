@@ -1,0 +1,62 @@
+mdc — reimplementação independente do Minecraft: Java Edition
+=============================================================
+
+Copyright (C) 2026 mdc contributors
+
+Este arquivo reúne: (a) a eleição de versão da licença do código, (b) a licença
+dos assets e (c) o registro de terceiros. O texto integral da licença do código
+está em LICENSE, sem qualquer modificação.
+
+NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG
+OR MICROSOFT. Minecraft, seu código, seus assets e seu nome pertencem à Mojang
+e à Microsoft. Política completa em docs/LEGAL.md.
+
+
+1. Licença do código — GNU AGPL, versão 3 apenas
+------------------------------------------------
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, **version 3 of the License only** — not "or any later
+version". The full text is in LICENSE.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along
+with this program. If not, see <https://www.gnu.org/licenses/>.
+
+SPDX-License-Identifier: AGPL-3.0-only
+
+Sobre mods: **não há permissão adicional nesta versão.** Um mod que linke contra
+este programa é obra derivada e precisa ser AGPL-3.0-only. A exceção de linking
+(AGPL §7) foi deliberadamente adiada — ver `docs/adr/0007-excecao-de-mods-adiada.md`.
+
+
+2. Assets — CC BY-SA 4.0
+------------------------
+
+Original art, textures, sounds, music, fonts created for this project, and the
+documentation illustration that is not code, are licensed under Creative
+Commons Attribution-ShareAlike 4.0 International. Text in
+`LICENSES/CC-BY-SA-4.0.txt`.
+
+    SPDX-License-Identifier: CC-BY-SA-4.0
+
+Obrigações: crédito ao projeto, e derivados sob a mesma licença (ou compatível).
+
+Assets de terceiros NÃO são cobertos por esta seção: cada um mantém a própria
+licença e precisa de registro em `LICENSES/README.md` antes de entrar no
+repositório. Assets do Minecraft nunca entram (ver docs/LEGAL.md).
+
+
+3. Terceiros
+------------
+
+Nenhuma dependência está vendorizada. As adotadas e as previstas, com licença,
+estão em `LICENSES/README.md`, que é a fonte de verdade e é atualizada a cada
+adoção.
+
+Fonte da licença: <https://www.gnu.org/licenses/agpl-3.0.txt>
+Creative Commons: <https://creativecommons.org/licenses/by-sa/4.0/legalcode>

@@ -1,0 +1,16 @@
+#!/bin/sh
+# SPDX-License-Identifier: AGPL-3.0-only
+# SPDX-FileCopyrightText: 2026 mdc contributors
+# Barreira 2 de 3: roda no `git push`. Verifica a árvore inteira, não só o index -
+# pega arquivo adicionado e "esquecido" fora do último commit.
+set -eu
+
+root=$(git rev-parse --show-toplevel)
+cd "$root"
+
+if ! command -v python3 >/dev/null 2>&1; then
+    echo "pre-push: python3 não encontrado; instale o Python 3 para rodar o gate." >&2
+    exit 1
+fi
+
+exec python3 tools/check_compliance.py --all
