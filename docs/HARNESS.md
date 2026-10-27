@@ -60,10 +60,10 @@ Regras obrigatórias no nosso lado:
 | Transcendentais | `Math.sin/cos/atan2/pow/exp/log` delegam a **fdlibm** (via `StrictMath`). Portar a mesma implementação — a `libm` do sistema **não** é bit-idêntica |
 | Aleatoriedade | `java.util.Random` (LCG de 48 bits) e as fontes do worldgen (`net/minecraft/world/level/levelgen/`) têm de ser reimplementadas bit a bit, não "equivalentes" |
 
-### Casos reais já encontrados (todos pelo harness)
+### Divergências conhecidas — o teste unitário não pega, o harness pega
 
-Três divergências que testes unitários não pegariam, e que só apareceram na
-comparação contra o original:
+Três armadilhas que passam em teste de unidade e só aparecem na comparação
+contra o original:
 
 **1. `AABB.getCenter()` não é média.** O original usa `Mth.lerp(0.5, min, max)`
 = `min + 0.5*(max-min)`. A "média óbvia" `(min+max)/2` diverge em **~9,9%** dos
@@ -75,8 +75,8 @@ casos (1–2 ULP).
 
 **3. `Math.min` do Java ≠ `std::min` do C++ no zero.** Entre `+0.0` e `-0.0`, Java
 devolve `-0.0` (e `+0.0` no `max`); `std::min` devolve o primeiro argumento e erra
-o bit de sinal. Um caso degenerado (`min_x == max_x == -510.625`) expôs um bug na
-nossa primeira versão, que tratava "iguais e negativos" como zero.
+o bit de sinal. O caso degenerado que expõe isso é `min_x == max_x == -510.625`:
+tratar "iguais e negativos" como zero erra o bit.
 
 Depois das três correções: **2.007 casos, 0 diferenças, md5 da transcrição igual
 nos dois lados**.

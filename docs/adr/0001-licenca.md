@@ -1,7 +1,6 @@
 # ADR 0001 — Licença
 
 **Status:** aceito (2026-10-26); item 2 (exceção de mods) **adiado** por [0007](0007-excecao-de-mods-adiada.md)
-**Substitui:** a licença MIT do esqueleto inicial (nunca publicada)
 
 ## Contexto
 
@@ -43,11 +42,9 @@ inteiramente por nós.
 - **Vender é permitido** (software livre pode ser vendido); **fechar não é**. Se
   o objetivo fosse proibir a venda, só a licença não comercial faria isso.
 - **Com DCO não podemos relicenciar** sem o consentimento de cada contribuidor.
-  Por isso a exceção de mods precisou existir **antes** da primeira contribuição.
+  Por isso qualquer permissão adicional tem de existir **antes** da primeira
+  contribuição — depois, ela exige acordo de todos.
 - O selo "open source" é mantido (OSI aprova AGPL-3.0), o que ajuda adoção,
   empacotamento por distros e contribuições.
 
-## Pendência
-
-O texto da exceção em `NOTICE` §2 é rascunho de engenharia. **Revisar com
-advogado de PI antes do primeiro release público.**
+A exceção de mods (item 2) não está vigente: ver [0007](0007-excecao-de-mods-adiada.md).

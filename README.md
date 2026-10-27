@@ -6,11 +6,11 @@ Reimplementação independente do Minecraft: Java Edition **26.3**, em C++, escr
 
 **Isto não é um mod.** Um mod é um delta sobre o binário original; aqui o que se distribui é um programa independente, que exige uma cópia legal do jogo para rodar. O projeto **não contém** código, assets, dados ou binários da Mojang.
 
-> `mdc` é o nome provisório (veio do diretório). O produto **não** usa "Minecraft" no nome, por exigência das [Usage Guidelines](https://www.minecraft.net/en-us/usage-guidelines).
+> `mdc` é o nome provisório do projeto. O produto **não** usa "Minecraft" no nome, por exigência das [Usage Guidelines](https://www.minecraft.net/en-us/usage-guidelines).
 
 ## Estado
 
-**Fase 1 — fundação + primeiro harness.** O que existe hoje e funciona:
+O que está implementado e verificado:
 
 | Item | Estado |
 |---|---|
@@ -27,7 +27,7 @@ Progresso medido, com critério de aceite por degrau: [`docs/PARITY.md`](docs/PA
 
 | Decisão | Escolha | ADR |
 |---|---|---|
-| Licença do código | **AGPL-3.0-only** + exceção de mods (§7) | [0001](docs/adr/0001-licenca.md) |
+| Licença do código | **AGPL-3.0-only**, sem exceção de linking (adiada) | [0001](docs/adr/0001-licenca.md) · [0007](docs/adr/0007-excecao-de-mods-adiada.md) |
 | Licença dos assets | **CC BY-SA 4.0** | [0001](docs/adr/0001-licenca.md) |
 | Contribuições | **DCO** (`git commit -s`), sem CLA | [0001](docs/adr/0001-licenca.md) |
 | Escopo | reimplementação independente; paridade como base; divergências declaradas em `docs/deltas/` | [0002](docs/adr/0002-escopo.md) |
@@ -36,7 +36,7 @@ Progresso medido, com critério de aceite por degrau: [`docs/PARITY.md`](docs/PA
 | Versão de referência | **26.3 congelada** (protocolo 777, world version 5023) | [0003](docs/adr/0003-versao.md) |
 | Stack | C++23, CMake + FetchContent, **SDL3 + Vulkan** + RHI própria, `shaderc`, doctest | [0004](docs/adr/0004-stack.md) |
 | Plataforma | **Linux x86-64 + Vulkan primeiro** | [0004](docs/adr/0004-stack.md) |
-| Mods | ABI C + fronteira de processo/WASM; **sem exceção de linking por ora** | [0005](docs/adr/0005-mods.md) · [0007](docs/adr/0007-excecao-de-mods-adiada.md) |
+| Mods | ABI C + fronteira de processo/WASM; **sem exceção de linking** | [0005](docs/adr/0005-mods.md) · [0007](docs/adr/0007-excecao-de-mods-adiada.md) |
 | Divergência do original | registrada em `docs/deltas/`, testada e reversível | [0006](docs/adr/0006-deltas.md) |
 | Como se prova paridade | harness diferencial, floats por bits, fixtures privados | [HARNESS](docs/HARNESS.md) |
 | Ordem do trabalho | degraus M0–M7, nenhum pulado | [PARITY](docs/PARITY.md) |
