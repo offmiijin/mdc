@@ -78,8 +78,8 @@ Núcleo por fan-in (quem todos usam): `core` (5.643 refs), `util` (4.129),
 
 | # | Degrau | Nota | Observação |
 |---|---|---:|---|
-| M0 | laço + janela | **0,50** | relógio verificado (12.000 ticks/600 s, drift 0, sem descarte); janela SDL3 apresentando frames na máquina-alvo (**driver x11/XWayland, 60,3 fps**) com título contador. **Falta:** input de teclado/mouse e captura de mouse — sem isso não se anda no mundo |
-| M1 | geometria/colisão | **0,50** | `Aabb` (constructor normalizado, `intersects`, `center` via lerp, `move`, `inflate`) com 8 casos de teste; **harness verde: 2.007 casos, 0 diferenças, md5 idêntico** contra o 26.3. Falta `clip`/raycast e resolução de colisão (o critério do degrau pede 10.000 casos de movimento) |
+| M0 | laço + janela | **1** | Relógio verificado (12.000 ticks/600 s, drift 0, 0 descartados) e janela SDL3 apresentando 36.001 frames a 60,0 fps no mesmo intervalo. Input: WASD/espaço/shift/ctrl mapeados por **scancode** (posição física, não símbolo) + captura relativa de mouse via `SDL_SetWindowRelativeMouseMode`. O `InputBuffer` do núcleo consome cada delta exatamente uma vez por tick (teclado é nível, mouse é borda) — verificado com eventos X11 reais: a tecla aparece em `[input] teclas=W..D...` e o delta em `mouse=(640.0, 360.0)` |
+| M1 | geometria/colisão | **0,50** | `Aabb` (constructor normalizado, `intersects`, `center` via lerp, `move`, `inflate`) com testes unitários em `tests/aabb_test.cpp`; **harness verde: 2.007 casos, 0 diferenças, md5 idêntico** contra o 26.3. Falta `clip`/raycast e resolução de colisão (o critério do degrau pede 10.000 casos de movimento) |
 | M2 | chunk/mesher/render | 0 | — |
 | M3 | jogador | 0 | — |
 | M4 | worldgen | 0 | — |

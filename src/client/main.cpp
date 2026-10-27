@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // SPDX-FileCopyrightText: 2026 mdc contributors
 //
-// mdc-client — M0: janela + laço de tick fixo a 20 Hz.
+// mdc-client — M0: janela + laço de tick fixo a 20 Hz + input.
 //
 // Dois modos:
 //   padrão      janela SDL3, deltas reais, limite de 60 fps
@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "mdc/core/input.hpp"
 #include "mdc/core/tick_clock.hpp"
 
 namespace {
@@ -147,6 +148,61 @@ bool driver_is_headless(const char* driver) {
                                  std::strcmp(driver, "offscreen") == 0);
 }
 
+/// Traduz o estado do teclado em máscara de ações.
+///
+/// Scancode (posição física), não keycode (símbolo impresso): WASD fica no mesmo
+/// lugar em ABNT2, US e AZERTY, como no jogo.
+std::uint16_t read_keys() {
+    const bool* keys = SDL_GetKeyboardState(nullptr);
+    if (keys == nullptr) {
+        return 0;
+    }
+    std::uint16_t mask = 0;
+    if (keys[SDL_SCANCODE_W]) {
+        mask |= mdc::core::mask_of(mdc::core::InputAction::kForward);
+    }
+    if (keys[SDL_SCANCODE_S]) {
+        mask |= mdc::core::mask_of(mdc::core::InputAction::kBack);
+    }
+    if (keys[SDL_SCANCODE_A]) {
+        mask |= mdc::core::mask_of(mdc::core::InputAction::kLeft);
+    }
+    if (keys[SDL_SCANCODE_D]) {
+        mask |= mdc::core::mask_of(mdc::core::InputAction::kRight);
+    }
+    if (keys[SDL_SCANCODE_SPACE]) {
+        mask |= mdc::core::mask_of(mdc::core::InputAction::kJump);
+    }
+    if (keys[SDL_SCANCODE_LSHIFT]) {
+        mask |= mdc::core::mask_of(mdc::core::InputAction::kSneak);
+    }
+    if (keys[SDL_SCANCODE_LCTRL]) {
+        mask |= mdc::core::mask_of(mdc::core::InputAction::kSprint);
+    }
+    return mask;
+}
+
+/// Prova observável de que o input chegou ao tick: uma linha por segundo
+/// simulado. Sem render (M2) é o único jeito de ver tecla e mouse chegando.
+void report_input(std::int64_t second, std::uint16_t keys, double mouse_dx, double mouse_dy) {
+    static constexpr mdc::core::InputAction kOrder[] = {
+        mdc::core::InputAction::kForward, mdc::core::InputAction::kBack,
+        mdc::core::InputAction::kLeft,    mdc::core::InputAction::kRight,
+        mdc::core::InputAction::kJump,    mdc::core::InputAction::kSneak,
+        mdc::core::InputAction::kSprint};
+    static constexpr char kGlyphs[] = {'W', 'S', 'A', 'D', 'J', 'N', 'R'};
+
+    char held[sizeof kGlyphs + 1];
+    for (std::size_t i = 0; i < sizeof kGlyphs; ++i) {
+        held[i] = (keys & mdc::core::mask_of(kOrder[i])) != 0U ? kGlyphs[i] : '.';
+    }
+    held[sizeof kGlyphs] = '\0';
+
+    std::printf("[input] t=%llds teclas=%s mouse=(%.1f, %.1f)\n", static_cast<long long>(second),
+                held, mouse_dx, mouse_dy);
+    std::fflush(stdout);
+}
+
 int run_windowed(const Options& options) {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         std::fprintf(stderr, "SDL_Init falhou: %s\n", SDL_GetError());
@@ -183,11 +239,26 @@ int run_windowed(const Options& options) {
     SDL_ShowWindow(window);
     present(window, 0); // primeiro frame: é o que faz a janela aparecer no Wayland
 
+    // Captura de mouse: sem ela o cursor bate na borda da janela e o olhar
+    // trava nela. Falha não é fatal — driver sem suporte (offscreen/dummy) só
+    // significa rodar sem captura, e isso tem de ser dito, não silenciado.
+    if (SDL_SetWindowRelativeMouseMode(window, true)) {
+        std::printf("[mouse] captura relativa ativa\n");
+    } else {
+        std::printf("[mouse] captura relativa indisponível: %s\n", SDL_GetError());
+    }
+    std::fflush(stdout);
+
     mdc::core::TickClock clock;
+    mdc::core::InputBuffer input;
     std::int64_t simulated_ns = 0;
     std::uint64_t previous = SDL_GetTicksNS();
     std::uint64_t next_frame_ns = previous;
     std::int64_t frames = 0;
+    std::int64_t trace_second = -1; ///< última linha de input já impressa
+    std::uint16_t keys_now = 0;
+    double mouse_dx = 0.0; ///< acumulado do segundo corrente
+    double mouse_dy = 0.0;
     bool running = true;
     bool event_forced_redraw = false;
     int exit_code = 0;
@@ -199,11 +270,20 @@ int run_windowed(const Options& options) {
                 running = false;
             } else if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_ESCAPE) {
                 running = false;
+            } else if (event.type == SDL_EVENT_MOUSE_MOTION) {
+                // Em captura relativa xrel/yrel são o movimento puro do mouse,
+                // sem o cursor preso à borda e sem aceleração do sistema.
+                input.add_mouse_delta(static_cast<double>(event.motion.xrel),
+                                      static_cast<double>(event.motion.yrel));
             } else if (event.type == SDL_EVENT_WINDOW_EXPOSED) {
                 // Compositor pediu redesenho (redimensionou, destapou): reapresenta.
                 event_forced_redraw = true;
             }
         }
+
+        // Teclado é nível: a máscara é reescrita a cada quadro, então tecla
+        // solta não depende de evento nenhum ser entregue.
+        input.set_keys(read_keys());
 
         const std::uint64_t now = SDL_GetTicksNS();
         const auto elapsed = static_cast<std::int64_t>(now - previous);
@@ -212,7 +292,19 @@ int run_windowed(const Options& options) {
 
         const int ticks = clock.advance(elapsed);
         for (int i = 0; i < ticks; ++i) {
-            // Corpo do tick (vazio em M0).
+            // Corpo do tick: em M0 só consome o input (a física é M3).
+            const mdc::core::InputFrame frame = input.consume();
+            keys_now = frame.keys;
+            mouse_dx += frame.mouse_dx;
+            mouse_dy += frame.mouse_dy;
+        }
+
+        const std::int64_t second = clock.ticks() / mdc::core::TickClock::kTicksPerSecond;
+        if (second > trace_second) {
+            trace_second = second;
+            report_input(second, keys_now, mouse_dx, mouse_dy);
+            mouse_dx = 0.0;
+            mouse_dy = 0.0;
         }
         if (ticks > 0 || event_forced_redraw) {
             present(window, clock.ticks());
