@@ -17,7 +17,7 @@ Reimplementação independente do Minecraft: Java Edition **26.3**, em C++, escr
 | licença, política legal e ADRs | ✅ 0001–0007 |
 | versão de referência congelada e verificável (`refs/minecraft.lock`) | ✅ 26.3 |
 | gate de conformidade com **13 regras**, hooks e CI | ✅ |
-| relógio de tick 20 Hz + janela SDL3 | ✅ **M0 = 0,50** — falta input |
+| relógio de tick 20 Hz + janela SDL3 + input | ✅ **M0 = 1** — 12.000 ticks/600 s, drift 0; WASD + mouse capturado |
 | geometria AABB + harness bit a bit | ✅ **M1 = 0,50** — 2.007 casos, 0 diferenças |
 | render, mundo, rede, sobrevivência | ⛔ M2–M7 |
 
@@ -49,7 +49,7 @@ SDL3 é opcional: se estiver instalado é usado; se não, o CMake baixa (`releas
 ```sh
 cmake --preset dev            # Debug, cliente + testes, avisos = erro
 cmake --build --preset dev
-ctest --preset dev            # 15 casos / 77 asserções
+ctest --preset dev            # 20 casos / 94 asserções
 ```
 
 Binários em `build/dev/bin/`. Sem GPU ou sem SDL:
@@ -64,6 +64,20 @@ Critério do degrau M0 (relógio de tick), sem abrir janela:
 ./build/dev/bin/mdc-client --headless --seconds=600
 # [headless] frames=36001 ticks=12000 simulados=600.017s esperado=12000 drift=0 descartados=0
 ```
+
+O mesmo critério com janela real — e o único jeito de ver o input chegar ao
+tick (uma linha por segundo simulado; `W..D...` = W e D pressionados):
+
+```sh
+./build/dev/bin/mdc-client --seconds=600
+# [mouse] captura relativa ativa
+# [input] t=300s teclas=W..D... mouse=(640.0, 360.0)
+# [janela] ticks=12000 simulados=600.000s esperado=12000 drift=0 descartados=0 frames=36001 fps=60.0
+```
+
+Mapeamento (scancode, posição física): `WASD` mover, `espaço` pular, `shift`
+agachar, `ctrl` correr, `ESC` encerrar. O mouse fica em captura relativa — o
+cursor não bate na borda da janela.
 
 Presets: `dev`, `headless`, `ci` (Release, SDL3 via FetchContent).
 `MDC_WERROR=ON` transforma aviso em erro — padrão em `dev` e `ci`.

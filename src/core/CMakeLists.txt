@@ -7,6 +7,7 @@
 
 add_library(mdc_core STATIC
   aabb.cpp
+  input.cpp
   tick_clock.cpp)
 
 target_include_directories(mdc_core PUBLIC
