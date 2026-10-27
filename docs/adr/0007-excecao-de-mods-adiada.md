@@ -7,23 +7,19 @@
 
 O ADR 0001 decidiu duas coisas ao mesmo tempo: licença AGPL-3.0-only **e** uma
 permissão adicional (§7) para que mods ligados ao motor pudessem ter outra
-licença. O texto dessa permissão ficou em `NOTICE` §2 como **rascunho de
-engenharia**, com duas condições pendentes:
+licença. Essa permissão depende de duas condições que não se cumprem:
 
-1. a redação precisa de revisão jurídica, que não aconteceu;
+1. a redação precisa de revisão jurídica;
 2. a fronteira técnica que ela pressupõe (ABI C estável + processo/WASM) **não
    existe** — o ADR 0005 diz que a ABI só é congelada depois do degrau M2.
 
-Ou seja: a permissão estava concedida no papel para um mecanismo que ainda não
-existe, e sem revisão. Conceder permissão é fácil; **retirar depois é caro** —
-com DCO, exigiria o consentimento de cada contribuidor que já tivesse entrado.
-
-Publicar o repositório com a permissão em rascunho assumiria um risco jurídico em
-troca de zero benefício imediato.
+Conceder permissão é fácil; **retirar depois é caro** — com DCO, exigiria o
+consentimento de cada contribuidor. Conceder agora significa assumir risco
+jurídico por um mecanismo que não existe, em troca de nenhum benefício imediato.
 
 ## Decisão
 
-**Publicar sem a exceção.** Nesta versão:
+**Não conceder a exceção.** No estado atual:
 
 - `NOTICE` **não** contém permissão adicional (§7). O programa é AGPL-3.0-only, ponto.
 - Um mod que linke contra o motor é obra derivada e **precisa ser AGPL-3.0-only**.
@@ -43,8 +39,8 @@ troca de zero benefício imediato.
 
 - O ecossistema de mods **de terceiros** fica indisponível até a ABI existir.
   Isso não bloqueia nada do M0–M7: mods são do M7+.
-- `docs/LEGAL.md` e `README.md` deixam de mencionar a exceção como vigente.
-- O `NOTICE` fica menor e mais fácil de auditar: três seções, nenhuma permissão extra.
+- `docs/LEGAL.md` e `README.md` descrevem a exceção como adiada, não como vigente.
+- O `NOTICE` tem três seções e nenhuma permissão extra — menor e mais fácil de auditar.
 - O ADR 0005 mantém a decisão de arquitetura (a fronteira é necessária para o AGPL
   não se propagar aos mods), mas a parte de licença fica pendente de um ADR futuro.
 
@@ -52,6 +48,6 @@ troca de zero benefício imediato.
 
 | Alternativa | Motivo |
 |---|---|
-| **Publicar com o rascunho** | assume risco jurídico por zero benefício: a ABI não existe |
-| **Revisar juridicamente antes de publicar** | bloqueia o repositório por semanas para uma permissão sem uso |
+| **Conceder a exceção já** | assume risco jurídico por zero benefício: a ABI não existe |
+| **Condicionar o projeto à revisão jurídica** | bloqueia o andamento por semanas para uma permissão sem uso |
 | **Desistir da exceção para sempre** | fecha a porta para mods de terceiros, que é objetivo declarado do projeto |

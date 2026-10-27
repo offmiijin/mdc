@@ -33,9 +33,10 @@ jobs:
   client:
     name: cliente (SDL3)
     runs-on: ubuntu-latest
-    # Não-bloqueante enquanto a lista de pacotes apt não tiver rodado verde em
-    # runner real. Depois disso, `continue-on-error` sai e o job vira gate: job
-    # vermelho que não bloqueia é job que apodrece sem ninguém ver.
+    # Não-bloqueante: compila SDL3 do fonte e depende de pacotes de sistema.
+    # O gate obrigatório é o job `core` (sem dependência de sistema) +
+    # `compliance`. Job vermelho que não bloqueia é job que apodrece sem
+    # ninguém ver — por isso este não é o único gate.
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
