@@ -186,6 +186,8 @@ tools/                       gate + testes + instalador de hooks
 
 Leia [`CONTRIBUTING.md`](CONTRIBUTING.md). Regra de ouro: **nunca** commite nada que tenha saído da sua instalação do Minecraft. Assine seus commits (`git commit -s`).
 
+Branches: **todo PR aponta para `development`** (a branch de desenvolvimento). `main` é o espelho do que foi publicado e **nunca** recebe PR — ela avança só por promoção de `development`, com o gate verde. Detalhes em [`docs/adr/0008`](docs/adr/0008-fluxo-de-branches.md).
+
 ## Licença
 
 Código sob **AGPL-3.0-only**; assets originais sob **CC BY-SA 4.0**. Ver [`LICENSE`](LICENSE) e [`NOTICE`](NOTICE). Isso cobre apenas o trabalho original deste repositório — Minecraft, seu código, assets e nome pertencem à Mojang e à Microsoft, sob a [Minecraft EULA](https://www.minecraft.net/en-us/eula).
