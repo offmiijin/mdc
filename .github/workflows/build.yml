@@ -33,18 +33,27 @@ jobs:
   client:
     name: cliente (SDL3)
     runs-on: ubuntu-latest
-    # Não-bloqueante por enquanto: compila SDL3 do fonte e depende de uma lista
-    # de pacotes apt que ainda não foi validada em runner real. O gate obrigatório
-    # é o job `core` (sem dependência de sistema) + o workflow `compliance`.
+    # Não-bloqueante enquanto a lista de pacotes apt não tiver rodado verde em
+    # runner real. Depois disso, `continue-on-error` sai e o job vira gate: job
+    # vermelho que não bloqueia é job que apodrece sem ninguém ver.
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - name: Dependências de sistema para SDL3
+        # Lista mínima para o configure do SDL3 (3.4.18) passar. X11 vem ligado
+        # por padrão e `CheckX11` (cmake/sdlchecks.cmake) aborta com
+        # `SDL_missing_dependency` quando uma extensão habilitada não tem
+        # header+lib. Exigidas: XCURSOR (libxcursor-dev), XDBE (libx11-dev),
+        # XINPUT (libxi-dev), XFIXES (libxfixes-dev), XSYNC e XSHAPE
+        # (libxext-dev), XRANDR (libxrandr-dev), XSCRNSAVER (libxss-dev)
+        # e XTEST (libxtst-dev) — as duas últimas também são o que faz a
+        # captura relativa de mouse funcionar de verdade no X11.
         run: |
           sudo apt-get update
           sudo apt-get install -y ninja-build libasound2-dev libpulse-dev \
             libudev-dev libx11-dev libxext-dev libxrandr-dev libxcursor-dev \
-            libxi-dev libxfixes-dev libwayland-dev libdecor-0-dev libegl1-mesa-dev
+            libxi-dev libxfixes-dev libxss-dev libxtst-dev \
+            libwayland-dev libdecor-0-dev libegl1-mesa-dev
       - name: Configurar (SDL3 via FetchContent)
         run: cmake --preset ci
       - name: Compilar
