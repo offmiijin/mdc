@@ -12,6 +12,7 @@ Um ADR é **imutável**: para mudar uma decisão, escreva um novo ADR que a subs
 | [0005](0005-mods.md) | Fronteira de mods: C ABI + processo/WASM (licença adiada por 0007) | aceito |
 | [0006](0006-deltas.md) | Política de divergência: delta registrado, testado e reversível | aceito |
 | [0007](0007-excecao-de-mods-adiada.md) | Exceção de mods adiada: publicar AGPL puro, conceder junto com a ABI | aceito |
+| [0008](0008-fluxo-de-branches.md) | Fluxo de branches: `development` integra (todo PR), `main` só publica | aceito |
 
 ## O que **não** é um ADR
 
