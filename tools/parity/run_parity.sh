@@ -21,7 +21,7 @@ cd "$root"
 
 if [ $# -lt 1 ]; then
     echo "uso: $0 <harness> [casos.txt]" >&2
-    echo "     harness: aabb vec3 clip blockpos collision" >&2
+    echo "     harness: aabb vec3 clip blockpos collision palette" >&2
     exit 2
 fi
 
@@ -36,6 +36,7 @@ case "$harness" in
     clip)      probe="ClipProbe" ;;
     blockpos)  probe="BlockPosProbe" ;;
     collision) probe="CollisionProbe" ;;
+    palette)   probe="PaletteProbe" ;;
     *) echo "erro: harness desconhecido: $harness" >&2; exit 2 ;;
 esac
 

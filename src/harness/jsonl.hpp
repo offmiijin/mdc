@@ -7,9 +7,11 @@
 #pragma once
 
 #include <cinttypes>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <span>
 
 #include "mdc/core/aabb.hpp"
 #include "mdc/core/vec3.hpp"
@@ -53,6 +55,25 @@ inline void print_box(const core::Aabb& b) {
 /// Cabeçalho de proveniência, idêntico nos dois lados.
 inline void print_header(const char* harness) {
     std::printf("{\"schema\":1,\"harness\":\"%s\"}\n", harness);
+}
+
+/// Um `long` do jogo em 16 dígitos hex: bits, e sempre com zero à esquerda para
+/// o diff não depender de formatação de cada linguagem.
+inline void print_hex_u64(std::uint64_t value) {
+    std::printf("\"%016" PRIx64 "\"", value);
+}
+
+/// Vetor de `long` do jogo, entre colchetes — usado pelos mapas de bits e pelo
+/// storage empacotado.
+inline void print_hex_u64s(std::span<const std::uint64_t> values) {
+    std::printf("[");
+    for (std::size_t i = 0; i < values.size(); ++i) {
+        if (i > 0) {
+            std::printf(",");
+        }
+        print_hex_u64(values[i]);
+    }
+    std::printf("]");
 }
 
 } // namespace mdc::harness

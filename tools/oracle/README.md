@@ -60,9 +60,13 @@ argumento ou variável de ambiente).
 ## Estado
 
 Probes implementados: **`AabbProbe`**, **`Vec3Probe`**, **`ClipProbe`**, **`CollisionProbe`**
-e **`BlockPosProbe`** (geometria, colisão e coordenada de bloco — degrau M1). O `CollisionProbe` usa **`StubLevel`**, um `Level`
-mínimo que responde "nenhuma colisão de mundo": assim o harness compara o
-resolvedor do próprio jogo, e não uma reimplementação nossa.
+e **`BlockPosProbe`** (geometria, colisão e coordenada de bloco — degrau M1), e
+**`PaletteProbe`** (empacotamento de bits, paleta e container paletizado — degrau
+M2). O `CollisionProbe` usa **`StubLevel`**, um `Level` mínimo que responde
+"nenhuma colisão de mundo": assim o harness compara o resolvedor do próprio jogo,
+e não uma reimplementação nossa. O `PaletteProbe` não bootstrappa o jogo: usa um
+`IdMap` próprio sobre tokens internos, então nenhum identificador do original
+entra na transcrição nem é preciso jar de assets.
 
 ### Como rodar um harness
 
@@ -74,7 +78,7 @@ python3 tools/parity/gen_<harness>_cases.py --out tests/parity/<harness>-0001.tx
 tools/parity/run_parity.sh <harness>
 ```
 
-`harness` ∈ `aabb`, `vec3`, `clip`, `blockpos`, `collision`. Por padrão o script
+`harness` ∈ `aabb`, `vec3`, `clip`, `blockpos`, `collision`, `palette`. Por padrão o script
 procura a instalação em `~/.minecraft`; para outro launcher:
 
 ```sh
@@ -85,7 +89,7 @@ O script: resolve o classpath → confere o **sha1 do jar contra `refs/minecraft
 → compila o probe → gera `.local/fixtures/<harness>/vanilla.jsonl` → gera
 `build/parity/<harness>.jsonl` → `diff`. Sai 0 se idênticos, 1 com o diff.
 
-**Resultado atual: 5 harnesses, 18.090 casos, 0 diferenças** — verificado com o
+**Resultado atual: 6 harnesses, 19.149 casos, 0 diferenças** — verificado com o
 jar do UltimMC (sha1 `e877b6a0…`, o mesmo do lock) e 56 bibliotecas resolvidas
 para linux/x86.
 
@@ -96,6 +100,7 @@ para linux/x86.
 | `clip` | 2.030 |
 | `blockpos` | 2.013 |
 | `collision` | 10.018 |
+| `palette` | 1.059 |
 
 ### Instalação do jogo: dois layouts
 
@@ -154,7 +159,7 @@ O que o probe compara (por caso):
 
 O que ainda **não** existe:
 
-- harness do M2 (paleta, modelo, atlas, tint, mesher, visibilidade) — o mapa do
-  degrau está em [`docs/PARITY.md`](../../docs/PARITY.md);
+- harness do M2 ainda pendentes: modelo, atlas, tint, mesher e visibilidade —
+  ordem e contrato em [`docs/PARITY.md`](../../docs/PARITY.md);
 - harness de tick, física, worldgen;
 - qualquer harness que abra o jogo com janela (todos são headless).

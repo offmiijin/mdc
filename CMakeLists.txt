@@ -25,6 +25,7 @@ include(CompilerFlags)
 include(Dependencies)
 
 add_subdirectory(src/core)
+add_subdirectory(src/world/level)
 add_subdirectory(src/world/phys)
 
 if(MDC_BUILD_CLIENT)
