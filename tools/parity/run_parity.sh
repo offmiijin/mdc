@@ -21,7 +21,7 @@ cd "$root"
 
 if [ $# -lt 1 ]; then
     echo "uso: $0 <harness> [casos.txt]" >&2
-    echo "     harness: aabb vec3 clip blockpos collision palette blockstate atlas" >&2
+    echo "     harness: aabb vec3 clip blockpos collision palette blockstate atlas tint" >&2
     exit 2
 fi
 
@@ -39,6 +39,7 @@ case "$harness" in
     palette)   probe="PaletteProbe" ;;
     blockstate) probe="BlockStateProbe" ;;
     atlas)     probe="AtlasProbe" ;;
+    tint)      probe="TintProbe" ;;
     *) echo "erro: harness desconhecido: $harness" >&2; exit 2 ;;
 esac
 
@@ -72,7 +73,7 @@ fi
 # O atlas é o único harness que precisa do pack de recursos e de nativos
 # (decodificar PNG usa NativeImage -> LWJGL). Os dois vêm da instalação do
 # usuário; nada é baixado.
-if [ "$harness" = "atlas" ]; then
+if [ "$harness" = "atlas" ] || [ "$harness" = "tint" ]; then
     assets="${MDC_MC_ASSETS:-$root/.sandbox-cache/mc-assets}"
     if [ ! -d "$assets/assets" ]; then
         echo "==> extraindo assets do jar para $assets (uma vez)"

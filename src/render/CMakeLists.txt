@@ -5,6 +5,7 @@
 # mesher. Sem SDL e sem Vulkan — é o que o harness compara (degrau M2).
 
 add_library(mdc_render STATIC
+  colormap.cpp
   sprite_inventory.cpp)
 
 target_include_directories(mdc_render PUBLIC

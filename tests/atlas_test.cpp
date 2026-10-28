@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <string>
 
+#include "mdc/render/colormap.hpp"
 #include "mdc/render/sprite_inventory.hpp"
 
 using mdc::render::SpriteEntry;
@@ -62,4 +63,29 @@ TEST_CASE("inventário do atlas de blocos (condicional ao jar)") {
     for (std::size_t i = 1; i < sprites.size(); ++i) {
         CHECK(sprites[i - 1].id != sprites[i].id);
     }
+}
+
+TEST_CASE("colormap: consulta medida ponta a ponta (condicional ao jar)") {
+    std::string error;
+    const auto pack = mdc::res::ResourcePack::from_environment(&error);
+    if (!pack.has_value()) {
+        MESSAGE("MDC_MC_JAR ausente: teste de colormap pulado (" << error << ")");
+        return;
+    }
+
+    const auto grass = mdc::render::Colormap::load(*pack, "grass", &error);
+    REQUIRE_MESSAGE(grass.has_value(), error);
+    REQUIRE_FALSE(grass->empty());
+
+    // Cantos da tabela: são os dois extremos que o harness fixa.
+    CHECK(grass->get(1.0, 1.0) == 0xFF47CD33U); // canto quente/úmido
+    CHECK(grass->get(0.0, 1.0) == 0xFF80B497U); // canto frio
+    CHECK(grass->get(1.0, 0.0) == 0xFFBFB755U); // quente/seco
+
+    // O eixo y depende de temperatura**precipitação**, não da precipitação só.
+    CHECK(grass->get(0.5, 1.0) != grass->get(1.0, 1.0));
+    CHECK(grass->get(0.5, 0.5) != grass->get(1.0, 0.5));
+
+    // Fora do domínio: o original estoura exceção; aqui é o sentinela.
+    CHECK(grass->get(-1.0, 0.5) == mdc::render::Colormap::kOutOfRange);
 }

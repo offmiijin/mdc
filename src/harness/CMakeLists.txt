@@ -21,7 +21,7 @@ endforeach()
 
 # Harnesses do M2 em diante não são de física: têm alvo próprio para deixar
 # explícito de qual módulo cada um depende.
-foreach(harness palette blockstate atlas)
+foreach(harness palette blockstate atlas tint)
   add_executable(mdc-parity-${harness} ${harness}_parity.cpp)
   target_link_libraries(mdc-parity-${harness} PRIVATE
     mdc_level
