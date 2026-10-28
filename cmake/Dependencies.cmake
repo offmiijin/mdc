@@ -7,6 +7,9 @@
 
 include(FetchContent)
 
+# zlib do sistema: o leitor de ZIP do pack (ADR 0009 — sem vendorizar miniz).
+find_package(ZLIB REQUIRED)
+
 set(MDC_SDL3_TAG "release-3.4.18" CACHE STRING "Tag do SDL3 usada quando não há versão de sistema")
 set(MDC_DOCTEST_TAG "v2.4.12" CACHE STRING "Tag do doctest")
 

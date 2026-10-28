@@ -16,12 +16,14 @@ add_executable(mdc_tests
   collision_test.cpp
   input_test.cpp
   paletted_container_test.cpp
+  res_test.cpp
   test_main.cpp
   tick_clock_test.cpp
   vec3_test.cpp)
 
 target_link_libraries(mdc_tests PRIVATE
   mdc_core
+  mdc_res
   mdc_level
   mdc_phys
   doctest::doctest
