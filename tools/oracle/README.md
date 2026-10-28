@@ -57,8 +57,8 @@ argumento ou variável de ambiente).
 
 ## Estado
 
-Probes implementados: **`AabbProbe`** e **`Vec3Probe`** (paridade de geometria, degrau M1).
-O mesmo contrato vale para qualquer probe novo (`ClipProbe`, `CollisionProbe`, …).
+Probes implementados: **`AabbProbe`**, **`Vec3Probe`** e **`ClipProbe`** (geometria, degrau M1).
+O mesmo contrato vale para qualquer probe novo (`BlockPosProbe`, `CollisionProbe`).
 
 ### Como rodar um harness
 

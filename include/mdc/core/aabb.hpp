@@ -2,6 +2,8 @@
 // SPDX-FileCopyrightText: 2026 mdc contributors
 #pragma once
 
+#include <optional>
+
 #include <bit>
 #include <cstdint>
 
@@ -82,6 +84,23 @@ class Aabb {
     [[nodiscard]] Aabb move(const Vec3& delta) const noexcept;
 
     [[nodiscard]] Aabb inflate(double x_add, double y_add, double z_add) const noexcept;
+
+    /// Expande cada limite na direção do delta (só para o lado do sinal).
+    [[nodiscard]] Aabb expand_towards(const Vec3& delta) const noexcept;
+
+    /// Pertencimento **inclusivo**: ponto na face conta como dentro — ao
+    /// contrário de `intersects`, que é estrito.
+    [[nodiscard]] bool contains(const Vec3& point) const noexcept;
+
+    [[nodiscard]] bool has_nan() const noexcept;
+
+    /// Primeiro ponto onde o segmento `from`→`to` toca a caixa.
+    ///
+    /// `nullopt` quando não há impacto de entrada: segmento que não cruza,
+    /// `from` dentro ou sobre a face (não existe face de entrada) e impacto que
+    /// cai exatamente em `to` — o comportamento foi medido no harness `clip`,
+    /// não deduzido.
+    [[nodiscard]] std::optional<Vec3> clip(const Vec3& from, const Vec3& to) const noexcept;
 
   private:
     double min_x_{0.0};

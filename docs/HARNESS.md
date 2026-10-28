@@ -78,7 +78,12 @@ devolve `-0.0` (e `+0.0` no `max`); `std::min` devolve o primeiro argumento e er
 o bit de sinal. O caso degenerado que expõe isso é `min_x == max_x == -510.625`:
 tratar "iguais e negativos" como zero erra o bit.
 
-**4. Constantes de limiar podem ser `float` promovido a `double`.** O limiar de
+**4. "Consertar" o resultado diverge.** `AABB.clip` devolve o `lerp` puro, e
+esse ponto pode cair 1 ULP **fora** da caixa (caso 1420). Grampear o resultado
+aos limites da caixa — que parece a coisa certa a fazer — diverge do original em
+1 bit. Paridade é reproduzir, não corrigir.
+
+**5. Constantes de limiar podem ser `float` promovido a `double`.** O limiar de
 `Vec3.normalize()` não é `1e-5` em double (`0x3EE4F8B588E368F1`) e sim
 `(double) 1e-5f` (`0x3EE4F8B580000000`) — 27 bits de mantissa a menos. Errar
 isso zera ou normaliza 147 de 2.020 casos, e nenhum teste de unidade escrito a

@@ -8,6 +8,7 @@ mdc_add_doctest()
 
 add_executable(mdc_tests
   aabb_test.cpp
+  clip_test.cpp
   input_test.cpp
   test_main.cpp
   tick_clock_test.cpp

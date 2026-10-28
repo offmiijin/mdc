@@ -79,7 +79,7 @@ Núcleo por fan-in (quem todos usam): `core` (5.643 refs), `util` (4.129),
 | # | Degrau | Nota | Observação |
 |---|---|---:|---|
 | M0 | laço + janela | **1** | Relógio verificado (12.000 ticks/600 s, drift 0, 0 descartados) e janela SDL3 apresentando 36.001 frames a 60,0 fps no mesmo intervalo. Input: WASD/espaço/shift/ctrl mapeados por **scancode** (posição física, não símbolo) + captura relativa de mouse via `SDL_SetWindowRelativeMouseMode`. O `InputBuffer` do núcleo consome cada delta exatamente uma vez por tick (teclado é nível, mouse é borda) — verificado com eventos X11 reais: a tecla aparece em `[input] teclas=W..D...` e o delta em `mouse=(640.0, 360.0)` |
-| M1 | geometria/colisão | **0,50** | `Aabb` (constructor normalizado, `intersects`, `center` via lerp, `move`, `inflate`) com testes unitários em `tests/aabb_test.cpp`; **harness verde: 2.007 casos, 0 diferenças, md5 idêntico** contra o 26.3. Falta `clip`/raycast e resolução de colisão (o critério do degrau pede 10.000 casos de movimento) |
+| M1 | geometria/colisão | **0,75** | `Vec3` completo e `Aabb` (`intersects`, `center` via lerp, `move`, `inflate`, `expand_towards`, `contains`, `clip`) com **três harnesses verdes** contra o 26.3: *aabb* (2.007), *vec3* (2.022) e *clip* (2.030), todos 0 diferenças. **Falta** resolução de colisão e `BlockPos` — o critério do degrau pede 10.000 casos de movimento |
 | M2 | chunk/mesher/render | 0 | — |
 | M3 | jogador | 0 | — |
 | M4 | worldgen | 0 | — |
