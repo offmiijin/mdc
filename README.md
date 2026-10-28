@@ -14,7 +14,7 @@ O que está implementado e verificado:
 
 | Item | Estado |
 |---|---|
-| licença, política legal e ADRs | ✅ 0001–0008 |
+| licença, política legal e ADRs | ✅ 0001–0009 |
 | versão de referência congelada e verificável (`refs/minecraft.lock`) | ✅ 26.3 |
 | gate de conformidade com **13 regras**, hooks e CI | ✅ |
 | relógio de tick 20 Hz + janela SDL3 + input | ✅ **M0 = 1** — 12.000 ticks/600 s, drift 0; WASD + mouse capturado |
@@ -169,7 +169,7 @@ docs/LEGAL.md                política de propriedade intelectual
 docs/HARNESS.md              como se prova paridade (determinismo, transcrição, fixtures)
 docs/PARITY.md               escada M0–M7 com critério de aceite por degrau
 docs/deltas/                 divergências intencionais (uma por arquivo, com harness)
-docs/adr/                    decisões de arquitetura (0001–0008)
+docs/adr/                    decisões de arquitetura (0001–0009)
 refs/minecraft.lock          26.3 congelada: hashes, protocolo 777, world version
 mods/                        mods de terceiros (cada um com LICENSE própria — R012)
 tools/oracle/                probe Java do harness (único lugar com .java)

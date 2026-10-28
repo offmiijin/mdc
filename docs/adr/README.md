@@ -13,6 +13,7 @@ Um ADR é **imutável**: para mudar uma decisão, escreva um novo ADR que a subs
 | [0006](0006-deltas.md) | Política de divergência: delta registrado, testado e reversível | aceito |
 | [0007](0007-excecao-de-mods-adiada.md) | Exceção de mods adiada: publicar AGPL puro, conceder junto com a ABI | aceito |
 | [0008](0008-fluxo-de-branches.md) | Fluxo de branches: `development` integra (todo PR), `main` só publica | aceito |
+| [0009](0009-m2-escopo.md) | Escopo do M2: superfície com o mesher, dados sintéticos, atlas dentro, fluidos/AO fora | aceito |
 
 ## O que **não** é um ADR
 
