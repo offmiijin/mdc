@@ -107,6 +107,20 @@ TEST_CASE("PNG: decodifica o pack do usuário (condicional ao jar)") {
     // PNG RGBA (transparência de verdade) e PNG não quadrado: o decodificador
     // não assume simetria. Textura indexada/cinza ainda não é suportada — entra
     // quando o M2.5 precisar de pixel de bloco; aqui o alvo é o colormap.
+    // Cinza de 8 bits: a textura de pedra é (8,0) no pack.
+    const auto gray = pack->read_text("minecraft", "textures/block/stone.png", &error);
+    REQUIRE_MESSAGE(gray.has_value(), error);
+    const auto stone = mdc::res::decode_png(*gray, &error);
+    REQUIRE_MESSAGE(stone.has_value(), error);
+    CHECK(stone->width == 16);
+    CHECK(stone->height == 16);
+    // Cinza: os três canais saem iguais e opacos.
+    for (std::size_t i = 0; i < stone->rgba.size(); i += 4) {
+        CHECK(stone->rgba[i] == stone->rgba[i + 1]);
+        CHECK(stone->rgba[i] == stone->rgba[i + 2]);
+        CHECK(stone->rgba[i + 3] == 0xFF);
+    }
+
     const auto rgba = pack->read_text("minecraft", "textures/block/acacia_trapdoor.png", &error);
     REQUIRE_MESSAGE(rgba.has_value(), error);
     const auto trapdoor = mdc::res::decode_png(*rgba, &error);
@@ -124,4 +138,36 @@ TEST_CASE("PNG: decodifica o pack do usuário (condicional ao jar)") {
     // Entrada que não é PNG é recusada, não "quase decodificada".
     CHECK_FALSE(mdc::res::decode_png("nao e png", &error).has_value());
     CHECK_FALSE(error.empty());
+}
+
+TEST_CASE("PNG: todas as texturas de bloco do pack decodificam") {
+    std::string error;
+    const auto pack = ResourcePack::from_environment(&error);
+    if (!pack.has_value()) {
+        MESSAGE("MDC_MC_JAR ausente: teste de texturas pulado (" << error << ")");
+        return;
+    }
+
+    int checked = 0;
+    int failed = 0;
+    for (const std::string& name : pack->archive().names()) {
+        if (!name.starts_with("assets/minecraft/textures/block/") || !name.ends_with(".png")) {
+            continue;
+        }
+        const auto bytes = pack->read_text("minecraft", name.substr(17), &error);
+        REQUIRE_MESSAGE(bytes.has_value(), name << ": " << error);
+        const auto image = mdc::res::decode_png(*bytes, &error);
+        if (!image.has_value()) {
+            ++failed;
+            MESSAGE("falhou: " << name << " (" << error << ")");
+            continue;
+        }
+        CHECK(image->width > 0);
+        CHECK(image->height > 0);
+        CHECK(image->rgba.size() == static_cast<std::size_t>(image->width) * image->height * 4U);
+        ++checked;
+    }
+    MESSAGE("texturas de bloco decodificadas: " << checked);
+    CHECK(failed == 0);
+    CHECK(checked > 1000);
 }

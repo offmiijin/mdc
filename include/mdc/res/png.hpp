@@ -19,11 +19,13 @@ struct Image {
     [[nodiscard]] bool empty() const noexcept { return width <= 0 || height <= 0; }
 };
 
-/// Decodifica PNG sem interlace, 8 bits por canal, tipos 2 (RGB) e 6 (RGBA).
+/// Decodifica PNG sem interlace: cinza, RGB, **indexado** (1/2/4/8 bits, com
+/// PLTE e tRNS), cinza+alfa e RGBA.
 ///
-/// É o mínimo que o pack usa para colormap e textura de bloco. Interlace e
-/// profundidades menores devolvem erro em vez de adivinhar: paridade não
-/// combina com "quase decodificado".
+/// O indexado não é luxo: no pack do 26.3 quase toda textura de bloco é
+/// indexada (688 em 8 bits, 349 em 4, 64 em 2) e a de pedra é cinza. Interlace
+/// devolve erro em vez de adivinhar: paridade não combina com "quase
+/// decodificado".
 [[nodiscard]] std::optional<Image> decode_png(std::string_view bytes, std::string* error = nullptr);
 
 } // namespace mdc::res
