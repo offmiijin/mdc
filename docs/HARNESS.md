@@ -78,6 +78,28 @@ devolve `-0.0` (e `+0.0` no `max`); `std::min` devolve o primeiro argumento e er
 o bit de sinal. O caso degenerado que expõe isso é `min_x == max_x == -510.625`:
 tratar "iguais e negativos" como zero erra o bit.
 
+**4. "Consertar" o resultado diverge.** `AABB.clip` devolve o `lerp` puro, e
+esse ponto pode cair 1 ULP **fora** da caixa (caso 1420). Grampear o resultado
+aos limites da caixa — que parece a coisa certa a fazer — diverge do original em
+1 bit. Paridade é reproduzir, não corrigir.
+
+**5. Ordem de resolução não é a "óbvia".** A colisão do original resolve **y
+primeiro** e depois o eixo de maior |movimento| entre x e z (empate vai para x).
+A ordem intuitiva (y, x, z) diverge em ~0,3% dos casos diagonais: o movimento de
+um eixo muda a sobreposição que decide o seguinte. Nenhuma ordem fixa explica o
+conjunto todo — a regra só apareceu com casos reduzidos a um sólido.
+
+**6. Sólido de espessura zero não colide.** `Shapes.create(AABB)` com `min == max`
+em algum eixo produz shape vazio; tratar como laje barra a queda de quem já está
+apoiado nela.
+
+**7. Constantes de limiar podem ser `float` promovido a `double`.** O limiar de
+`Vec3.normalize()` não é `1e-5` em double (`0x3EE4F8B588E368F1`) e sim
+`(double) 1e-5f` (`0x3EE4F8B580000000`) — 27 bits de mantissa a menos. Errar
+isso zera ou normaliza 147 de 2.020 casos, e nenhum teste de unidade escrito a
+partir do "bom senso" detecta. A fronteira foi achada por **bissecção no probe**:
+o último vetor zerado e o primeiro normalizado são vizinhos dela.
+
 Depois das três correções: **2.007 casos, 0 diferenças, md5 da transcrição igual
 nos dois lados**.
 
@@ -120,9 +142,9 @@ Essa distinção é o que permite versionar os casos:
 | **Transcrição do jogo** | resposta do original | **não** — `.local/fixtures/` (regra `R013`) |
 | **Nossa transcrição** | nosso código | não — `build/` |
 
-O gerador (`tools/parity/gen_aabb_cases.py`) é determinístico por PRNG próprio
-(xorshift64*), não pelo `random` da linguagem — a mesma seed produz o mesmo
-arquivo em qualquer versão de Python.
+Os geradores (`tools/parity/gen_<harness>_cases.py`) são determinísticos pelo
+PRNG próprio em `tools/parity/prng.py` (xorshift64*), não pelo `random` da
+linguagem — a mesma seed produz o mesmo arquivo em qualquer versão de Python.
 
 ## 4. Fixtures
 
@@ -141,7 +163,7 @@ arquivo em qualquer versão de Python.
 ## 5. Ciclo de trabalho
 
 ```
-1. escrever o probe (Java) + o caso no C++
+1. escrever o probe (Java) + o caso no C++ + o gerador (`gen_<harness>_cases.py`)
 2. rodar os dois → duas transcrições
 3. diff → se 0, harness verde; se não:
      a. minimizar o caso (menos ticks, menos entidades)

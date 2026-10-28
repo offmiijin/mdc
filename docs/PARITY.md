@@ -26,7 +26,7 @@ nenhuma". A lista de diferenças conhecidas é viva e mora em
 | # | Objetivo | Superfície tocada | Harness de aceite | Critério de pronto |
 |---|---|---|---|---|
 | **M0** | janela + laço fixo de 20 Hz + input | `client/main`, `Minecraft.runTick` | *tick-clock* | 10 min contínuos: 12.000 ticks, drift 0, sem tick perdido ou duplicado; janela visível apresentando frames |
-| **M1** | geometria: `Vec3`, `AABB`, `BlockPos`, colisão | `core` (11.641 linhas), `world/phys` (1.082) | *aabb*, *collision* | 10.000 casos de colisão/movimento idênticos **bit a bit** (posição, velocidade, flag de chão) |
+| **M1** | geometria: `Vec3`, `AABB`, `BlockPos`, colisão | `core` (11.641 linhas), `world/phys` (1.082) | *aabb*, *vec3*, *clip*, *collision* | 10.000 casos de colisão/movimento idênticos **bit a bit** (posição, velocidade, flag de chão) |
 | **M2** | chunk, paleta, mesher, render de terreno | `world/level/chunk`, `client/renderer/{chunk,extract}` | *chunk-mesh* | mesma seed → mesmos vértices e mesmas faces visíveis (hash igual); 1.000 chunks |
 | **M3** | jogador: física, câmera, quebrar/colocar, drops | `world/entity/player`, `client/player` | *player-walk*, *break-place* | 1.000 operações de movimento e 500 de quebrar/colocar idênticas |
 | **M4** | geração de mundo: ruído, biomas, estruturas | `world/level/levelgen` (o maior bloco de `world`) | *worldgen* | 200 chunks por dimensão: hash do bloco a bloco igual ao vanilla |
@@ -79,7 +79,7 @@ Núcleo por fan-in (quem todos usam): `core` (5.643 refs), `util` (4.129),
 | # | Degrau | Nota | Observação |
 |---|---|---:|---|
 | M0 | laço + janela | **1** | Relógio verificado (12.000 ticks/600 s, drift 0, 0 descartados) e janela SDL3 apresentando 36.001 frames a 60,0 fps no mesmo intervalo. Input: WASD/espaço/shift/ctrl mapeados por **scancode** (posição física, não símbolo) + captura relativa de mouse via `SDL_SetWindowRelativeMouseMode`. O `InputBuffer` do núcleo consome cada delta exatamente uma vez por tick (teclado é nível, mouse é borda) — verificado com eventos X11 reais: a tecla aparece em `[input] teclas=W..D...` e o delta em `mouse=(640.0, 360.0)` |
-| M1 | geometria/colisão | **0,50** | `Aabb` (constructor normalizado, `intersects`, `center` via lerp, `move`, `inflate`) com testes unitários em `tests/aabb_test.cpp`; **harness verde: 2.007 casos, 0 diferenças, md5 idêntico** contra o 26.3. Falta `clip`/raycast e resolução de colisão (o critério do degrau pede 10.000 casos de movimento) |
+| M1 | geometria/colisão | **1** | `Vec3`, `Aabb` (`intersects`, `center` via lerp, `move`, `inflate`, `expand_towards`, `contains`, `clip`) resolução de colisão (`collide_move`) e `BlockPos`, com **cinco harnesses verdes** contra o 26.3, 0 diferenças: *aabb* (2.007), *vec3* (2.022), *clip* (2.030), *collision* (**10.018 casos de movimento**, acima dos 10.000 do critério) e *blockpos* (2.013). A ordem dos eixos (y, depois o maior entre x e z) foi **medida**, não deduzida. A flag de chão é derivada do movimento barrado e coberta por teste de unidade — não comparada, por falta de entidade viva no probe ([delta 0001](deltas/0001-flag-de-chao-derivada.md)) |
 | M2 | chunk/mesher/render | 0 | — |
 | M3 | jogador | 0 | — |
 | M4 | worldgen | 0 | — |

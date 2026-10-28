@@ -18,7 +18,7 @@ O que está implementado e verificado:
 | versão de referência congelada e verificável (`refs/minecraft.lock`) | ✅ 26.3 |
 | gate de conformidade com **13 regras**, hooks e CI | ✅ |
 | relógio de tick 20 Hz + janela SDL3 + input | ✅ **M0 = 1** — 12.000 ticks/600 s, drift 0; WASD + mouse capturado |
-| geometria AABB + harness bit a bit | ✅ **M1 = 0,50** — 2.007 casos, 0 diferenças |
+| geometria + colisão, harness bit a bit | ✅ **M1 = 1** — 16.077 casos em 4 harnesses |
 | render, mundo, rede, sobrevivência | ⛔ M2–M7 |
 
 Progresso medido, com critério de aceite por degrau: [`docs/PARITY.md`](docs/PARITY.md).
@@ -49,7 +49,7 @@ SDL3 é opcional: se estiver instalado é usado; se não, o CMake baixa (`releas
 ```sh
 cmake --preset dev            # Debug, cliente + testes, avisos = erro
 cmake --build --preset dev
-ctest --preset dev            # 20 casos / 94 asserções
+ctest --preset dev            # 43 casos / 198 asserções
 ```
 
 Binários em `build/dev/bin/`. Sem GPU ou sem SDL:
@@ -110,12 +110,19 @@ Compara o nosso código com o jogo original, bit a bit. Precisa de **JDK 25** e 
 uma instalação do jogo (própria, legal).
 
 ```sh
-tools/parity/run_aabb.sh                              # usa ~/.minecraft
-MDC_MC_DIR=~/Games/UltimMC tools/parity/run_aabb.sh   # MultiMC/UltimMC/Prism
+tools/parity/run_parity.sh aabb                              # usa ~/.minecraft
+MDC_MC_DIR=~/Games/UltimMC tools/parity/run_parity.sh vec3   # MultiMC/UltimMC/Prism
 ```
 
-Estado: **2.007 casos, 0 diferenças**. Contrato e armadilhas em
-[`tools/oracle/README.md`](tools/oracle/README.md).
+| Harness | O que compara | Estado |
+|---|---|---|
+| `aabb` | construtor, `intersects`, `center`, `move`, `inflate` | ✅ 2.007 casos, 0 diferenças |
+| `vec3` | `add/subtract/scale/dot/cross/length/normalize/lerp` | ✅ 2.022 casos, 0 diferenças |
+| `clip` | `Aabb::clip` (raycast): entrada, saída, degenerado, empate de eixos | ✅ 2.030 casos, 0 diferenças |
+| `collision` | resolução de colisão: movimento aplicado contra N sólidos | ✅ **10.018 casos**, 0 diferenças |
+| `blockpos` | `BlockPos.containing` (floor com saturação do Java) e vizinhos | ✅ 2.013 casos, 0 diferenças |
+
+Contrato e armadilhas em [`tools/oracle/README.md`](tools/oracle/README.md).
 
 No fim, o relatório traz o pacing real:
 

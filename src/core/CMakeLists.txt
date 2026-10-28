@@ -7,8 +7,10 @@
 
 add_library(mdc_core STATIC
   aabb.cpp
+  block_pos.cpp
   input.cpp
-  tick_clock.cpp)
+  tick_clock.cpp
+  vec3.cpp)
 
 target_include_directories(mdc_core PUBLIC
   "${PROJECT_SOURCE_DIR}/include")

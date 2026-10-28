@@ -8,12 +8,17 @@ mdc_add_doctest()
 
 add_executable(mdc_tests
   aabb_test.cpp
+  block_pos_test.cpp
+  clip_test.cpp
+  collision_test.cpp
   input_test.cpp
   test_main.cpp
-  tick_clock_test.cpp)
+  tick_clock_test.cpp
+  vec3_test.cpp)
 
 target_link_libraries(mdc_tests PRIVATE
   mdc_core
+  mdc_phys
   doctest::doctest
   mdc_fp_strict
   mdc_warnings)
