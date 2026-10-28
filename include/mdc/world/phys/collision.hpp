@@ -18,8 +18,11 @@ struct MoveResult {
 
 /// Aplica `movement` à caixa `box`, barrando em cada sólido de `solids`.
 ///
-/// A ordem dos eixos é a do original (y, depois x, depois z) e a caixa é movida
-/// entre os eixos — quem decide a ordem é o harness `collision`, não a intuição.
+/// A ordem dos eixos é a do original e foi **medida** pelo harness `collision`:
+/// **y primeiro** e depois o eixo de maior `|movimento|` entre x e z (empate vai
+/// para x) — a caixa anda entre os eixos, e o movimento de um eixo muda a
+/// sobreposição que decide o seguinte. Ordem fixa (y, x, z) diverge em ~0,3% dos
+/// casos diagonais.
 [[nodiscard]] MoveResult collide_move(const core::Aabb& box, const core::Vec3& movement,
                                       std::span<const core::Aabb> solids) noexcept;
 

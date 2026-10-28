@@ -45,8 +45,10 @@ argumento ou variável de ambiente).
 ## Formato da transcrição
 
 - Uma linha JSON por amostra (`JSONL`).
-- Floats em **hex** (`0x1.fffffffffffffp-2`), nunca decimal — comparação é por
-  bits exatos.
+- `double` como **bits**: 16 dígitos hex do padrão IEEE-754 (`3fe0000000000000`
+  = 0.5), nunca decimal e nunca hex-float — Java (`0x0.0p0`) e C (`0x0p+0`)
+  formatam hex-float de formas diferentes. Formato completo em
+  [`docs/HARNESS.md`](../../docs/HARNESS.md) §3.
 - Campos ordenados de forma determinística.
 - O arquivo gerado **nunca** entra no repositório: fica em `.local/fixtures/`.
 
@@ -83,8 +85,17 @@ O script: resolve o classpath → confere o **sha1 do jar contra `refs/minecraft
 → compila o probe → gera `.local/fixtures/<harness>/vanilla.jsonl` → gera
 `build/parity/<harness>.jsonl` → `diff`. Sai 0 se idênticos, 1 com o diff.
 
-**Resultado atual: 2.007 casos, 0 diferenças** — verificado com o jar do UltimMC
-(sha1 `e877b6a0…`, o mesmo do lock) e 56 bibliotecas resolvidas para linux/x86.
+**Resultado atual: 5 harnesses, 18.090 casos, 0 diferenças** — verificado com o
+jar do UltimMC (sha1 `e877b6a0…`, o mesmo do lock) e 56 bibliotecas resolvidas
+para linux/x86.
+
+| harness | casos |
+|---|---:|
+| `aabb` | 2.007 |
+| `vec3` | 2.022 |
+| `clip` | 2.030 |
+| `blockpos` | 2.013 |
+| `collision` | 10.018 |
 
 ### Instalação do jogo: dois layouts
 
@@ -143,7 +154,7 @@ O que o probe compara (por caso):
 
 O que ainda **não** existe:
 
-- `clip`/raycast e resolução de colisão (o próximo probe, e o que dá trabalho: a
-  ordem das operações do slab test tem de bater bit a bit);
+- harness do M2 (paleta, modelo, atlas, tint, mesher, visibilidade) — o mapa do
+  degrau está em [`docs/PARITY.md`](../../docs/PARITY.md);
 - harness de tick, física, worldgen;
 - qualquer harness que abra o jogo com janela (todos são headless).
