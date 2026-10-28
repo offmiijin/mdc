@@ -6,6 +6,7 @@
 
 add_library(mdc_res STATIC
   json.cpp
+  png.cpp
   resource_pack.cpp
   zip.cpp)
 
