@@ -78,6 +78,13 @@ devolve `-0.0` (e `+0.0` no `max`); `std::min` devolve o primeiro argumento e er
 o bit de sinal. O caso degenerado que expõe isso é `min_x == max_x == -510.625`:
 tratar "iguais e negativos" como zero erra o bit.
 
+**4. Constantes de limiar podem ser `float` promovido a `double`.** O limiar de
+`Vec3.normalize()` não é `1e-5` em double (`0x3EE4F8B588E368F1`) e sim
+`(double) 1e-5f` (`0x3EE4F8B580000000`) — 27 bits de mantissa a menos. Errar
+isso zera ou normaliza 147 de 2.020 casos, e nenhum teste de unidade escrito a
+partir do "bom senso" detecta. A fronteira foi achada por **bissecção no probe**:
+o último vetor zerado e o primeiro normalizado são vizinhos dela.
+
 Depois das três correções: **2.007 casos, 0 diferenças, md5 da transcrição igual
 nos dois lados**.
 
@@ -120,9 +127,9 @@ Essa distinção é o que permite versionar os casos:
 | **Transcrição do jogo** | resposta do original | **não** — `.local/fixtures/` (regra `R013`) |
 | **Nossa transcrição** | nosso código | não — `build/` |
 
-O gerador (`tools/parity/gen_aabb_cases.py`) é determinístico por PRNG próprio
-(xorshift64*), não pelo `random` da linguagem — a mesma seed produz o mesmo
-arquivo em qualquer versão de Python.
+Os geradores (`tools/parity/gen_<harness>_cases.py`) são determinísticos pelo
+PRNG próprio em `tools/parity/prng.py` (xorshift64*), não pelo `random` da
+linguagem — a mesma seed produz o mesmo arquivo em qualquer versão de Python.
 
 ## 4. Fixtures
 
@@ -141,7 +148,7 @@ arquivo em qualquer versão de Python.
 ## 5. Ciclo de trabalho
 
 ```
-1. escrever o probe (Java) + o caso no C++
+1. escrever o probe (Java) + o caso no C++ + o gerador (`gen_<harness>_cases.py`)
 2. rodar os dois → duas transcrições
 3. diff → se 0, harness verde; se não:
      a. minimizar o caso (menos ticks, menos entidades)

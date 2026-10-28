@@ -19,25 +19,7 @@ from __future__ import annotations
 import argparse
 import os
 
-MASK = 0xFFFFFFFFFFFFFFFF
-
-
-class XorShift64Star:
-    def __init__(self, seed: int) -> None:
-        self.state = seed & MASK or 0x9E3779B97F4A7C15
-
-    def next(self) -> int:
-        x = self.state
-        x ^= (x >> 12) & MASK
-        x ^= (x << 25) & MASK
-        x ^= (x >> 27) & MASK
-        self.state = x & MASK
-        return (self.state * 0x2545F4914F6CDD1D) & MASK
-
-    def coord(self, lo: float, hi: float) -> float:
-        """Valor em [lo, hi], múltiplo de 1/8 — exatamente representável em double."""
-        span = int((hi - lo) * 8)
-        return lo + (self.next() % (span + 1)) / 8.0
+from prng import XorShift64Star
 
 
 def normalise(min_v: float, size: float) -> tuple[float, float]:

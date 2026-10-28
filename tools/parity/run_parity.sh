@@ -2,39 +2,57 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # SPDX-FileCopyrightText: 2026 mdc contributors
 #
-# Harness de paridade de AABB — roda o probe Java contra o SEU client.jar e
-# compara com o nosso binário, bit a bit.
+# Harness de paridade — roda o probe Java contra o SEU client.jar e compara com
+# o nosso binário, bit a bit.
 #
 # Uso:
-#   tools/parity/run_aabb.sh [client.jar] [casos.txt]
+#   tools/parity/run_parity.sh <harness> [casos.txt]
 #
-#   client.jar  padrão: $MDC_MC_JAR, senão ~/.minecraft/versions/26.3/26.3.jar
-#   casos       padrão: tests/parity/aabb-0001.txt
+#   harness    aabb | vec3 | clip | blockpos | collision
+#   casos      padrão: tests/parity/<harness>-0001.txt
+#   client.jar MDC_MC_JAR, senão o jar achado no layout de $MDC_MC_DIR
 #
 # Saída do jogo (fixture) vai para .local/fixtures/ — nunca para o repositório.
+# Ver docs/HARNESS.md.
 set -eu
 
 root=$(cd "$(dirname "$0")/../.." && pwd)
 cd "$root"
 
+if [ $# -lt 1 ]; then
+    echo "uso: $0 <harness> [casos.txt]" >&2
+    echo "     harness: aabb vec3 clip blockpos collision" >&2
+    exit 2
+fi
+
+harness="$1"
+cases="${2:-tests/parity/$harness-0001.txt}"
+
+# Nome do probe e do binário por harness. Explícito, e não "capitalize": o
+# mapeamento é contrato, não convenção de string.
+case "$harness" in
+    aabb)      probe="AabbProbe" ;;
+    vec3)      probe="Vec3Probe" ;;
+    clip)      probe="ClipProbe" ;;
+    blockpos)  probe="BlockPosProbe" ;;
+    collision) probe="CollisionProbe" ;;
+    *) echo "erro: harness desconhecido: $harness" >&2; exit 2 ;;
+esac
+
 mc_dir="${MDC_MC_DIR:-$HOME/.minecraft}"
-cases="${2:-tests/parity/aabb-0001.txt}"
 
 # O classpath vem do version json (ordem exata das bibliotecas), não de `find`:
 # instalações com duas versões de DataFixerUpper quebram se a errada vier antes.
 # Suporta launcher oficial e MultiMC/UltimMC/Prism (ver tools/parity/classpath.py).
-if [ $# -ge 1 ] && [ -f "$1" ]; then
-    jar="$1"
-    CP=$(python3 tools/parity/classpath.py "$mc_dir" 26.3) || exit 2
-    CP="$jar:$CP"
-else
-    CP=$(python3 tools/parity/classpath.py "$mc_dir" 26.3) || exit 2
-    jar=$(printf '%s' "$CP" | cut -d: -f1)
+CP=$(python3 tools/parity/classpath.py "$mc_dir" 26.3) || exit 2
+if [ -n "${MDC_MC_JAR:-}" ]; then
+    CP="$MDC_MC_JAR:$CP"
 fi
+jar=$(printf '%s' "$CP" | cut -d: -f1)
 
 [ -f "$jar" ] || { echo "erro: client.jar não encontrado ($jar)" >&2; exit 2; }
 [ -f "$cases" ] || { echo "erro: casos não encontrados em $cases" >&2
-                     echo "      gere com: python3 tools/parity/gen_aabb_cases.py" >&2; exit 2; }
+                     echo "      gere com: python3 tools/parity/gen_${harness}_cases.py" >&2; exit 2; }
 
 # Proveniência: o jar tem de ser o 26.3 que o lock registra.
 expected=$(grep -o '"sha1": "[0-9a-f]\{40\}"' refs/minecraft.lock | head -1 | cut -d'"' -f4)
@@ -63,41 +81,41 @@ if [ -z "$run_major" ] || [ "$run_major" -lt 25 ]; then
     exit 2
 fi
 
-out_native=".local/fixtures/aabb"
+out_native=".local/fixtures/$harness"
 out_ours="build/parity"
 mkdir -p "$out_native" "$out_ours/classes"
 
-echo "==> 1/4 compilando o probe (JDK $major)"
-javac -cp "$CP" -d "$out_ours/classes" tools/oracle/java/dev/mdc/oracle/AabbProbe.java
+echo "==> 1/4 compilando o probe $probe (JDK $major)"
+javac -cp "$CP" -d "$out_ours/classes" "tools/oracle/java/dev/mdc/oracle/$probe.java"
 
 echo "==> 2/4 gerando a transcrição do jogo"
 CP="$CP:$out_ours/classes"
-java -cp "$CP" dev.mdc.oracle.AabbProbe "$cases" > "$out_native/vanilla.jsonl"
+java -cp "$CP" "dev.mdc.oracle.$probe" "$cases" > "$out_native/vanilla.jsonl"
 
 echo "==> 3/4 gerando a nossa transcrição"
 native=""
-for candidate in build/dev/bin/mdc-parity-aabb build/headless/bin/mdc-parity-aabb \
-                 build/ci/bin/mdc-parity-aabb; do
+for candidate in "build/dev/bin/mdc-parity-$harness" "build/headless/bin/mdc-parity-$harness" \
+                 "build/ci/bin/mdc-parity-$harness"; do
     if [ -x "$candidate" ]; then native="$candidate"; break; fi
 done
 if [ -z "$native" ]; then
     echo "    binário ausente; configurando e compilando (preset dev)"
     cmake --preset dev >/dev/null
-    cmake --build --preset dev --target mdc-parity-aabb >/dev/null
-    native=build/dev/bin/mdc-parity-aabb
+    cmake --build --preset dev --target "mdc-parity-$harness" >/dev/null
+    native="build/dev/bin/mdc-parity-$harness"
 fi
-"$native" "$cases" > "$out_ours/ours.jsonl"
+"$native" "$cases" > "$out_ours/$harness.jsonl"
 
 echo "==> 4/4 comparando"
-if diff -u "$out_native/vanilla.jsonl" "$out_ours/ours.jsonl" > "$out_ours/aabb.diff"; then
-    cases_done=$(tail -1 "$out_ours/ours.jsonl" | sed -E 's/.*"cases":([0-9]+).*/\1/')
-    echo "✔ paridade: $cases_done casos, 0 diferenças"
+if diff -u "$out_native/vanilla.jsonl" "$out_ours/$harness.jsonl" > "$out_ours/$harness.diff"; then
+    cases_done=$(tail -1 "$out_ours/$harness.jsonl" | sed -E 's/.*"cases":([0-9]+).*/\1/')
+    echo "✔ paridade $harness: $cases_done casos, 0 diferenças"
     exit 0
 fi
 
-echo "✖ divergências encontradas:"
-head -40 "$out_ours/aabb.diff" | sed 's/^/    /'
-total=$(diff "$out_native/vanilla.jsonl" "$out_ours/ours.jsonl" | grep -c '^<' || true)
-echo "    $total linha(s) divergentes — diff completo em $out_ours/aabb.diff"
+echo "✖ divergências encontradas em $harness:"
+head -40 "$out_ours/$harness.diff" | sed 's/^/    /'
+total=$(diff "$out_native/vanilla.jsonl" "$out_ours/$harness.jsonl" | grep -c '^<' || true)
+echo "    $total linha(s) divergentes — diff completo em $out_ours/$harness.diff"
 echo "    próximo passo: minimizar o caso (menos casos, ver docs/HARNESS.md §5)"
 exit 1

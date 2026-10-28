@@ -26,7 +26,7 @@ nenhuma". A lista de diferenças conhecidas é viva e mora em
 | # | Objetivo | Superfície tocada | Harness de aceite | Critério de pronto |
 |---|---|---|---|---|
 | **M0** | janela + laço fixo de 20 Hz + input | `client/main`, `Minecraft.runTick` | *tick-clock* | 10 min contínuos: 12.000 ticks, drift 0, sem tick perdido ou duplicado; janela visível apresentando frames |
-| **M1** | geometria: `Vec3`, `AABB`, `BlockPos`, colisão | `core` (11.641 linhas), `world/phys` (1.082) | *aabb*, *collision* | 10.000 casos de colisão/movimento idênticos **bit a bit** (posição, velocidade, flag de chão) |
+| **M1** | geometria: `Vec3`, `AABB`, `BlockPos`, colisão | `core` (11.641 linhas), `world/phys` (1.082) | *aabb*, *vec3*, *clip*, *collision* | 10.000 casos de colisão/movimento idênticos **bit a bit** (posição, velocidade, flag de chão) |
 | **M2** | chunk, paleta, mesher, render de terreno | `world/level/chunk`, `client/renderer/{chunk,extract}` | *chunk-mesh* | mesma seed → mesmos vértices e mesmas faces visíveis (hash igual); 1.000 chunks |
 | **M3** | jogador: física, câmera, quebrar/colocar, drops | `world/entity/player`, `client/player` | *player-walk*, *break-place* | 1.000 operações de movimento e 500 de quebrar/colocar idênticas |
 | **M4** | geração de mundo: ruído, biomas, estruturas | `world/level/levelgen` (o maior bloco de `world`) | *worldgen* | 200 chunks por dimensão: hash do bloco a bloco igual ao vanilla |

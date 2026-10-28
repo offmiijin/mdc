@@ -4,12 +4,16 @@
 # Binários de harness: sem SDL, sem GPU. Compilam em qualquer máquina e são o
 # lado C++ das comparações descritas em docs/HARNESS.md.
 
-add_executable(mdc-parity-aabb aabb_parity.cpp)
+# Um alvo por harness, sempre `mdc-parity-<harness>` a partir de
+# `<harness>_parity.cpp` — o mesmo nome que `tools/parity/run_parity.sh` procura.
+foreach(harness aabb vec3)
+  add_executable(mdc-parity-${harness} ${harness}_parity.cpp)
 
-target_link_libraries(mdc-parity-aabb PRIVATE
-  mdc_core
-  mdc_warnings
-  mdc_fp_strict)
+  target_link_libraries(mdc-parity-${harness} PRIVATE
+    mdc_core
+    mdc_warnings
+    mdc_fp_strict)
 
-set_target_properties(mdc-parity-aabb PROPERTIES
-  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+  set_target_properties(mdc-parity-${harness} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+endforeach()

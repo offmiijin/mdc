@@ -57,27 +57,29 @@ argumento ou variável de ambiente).
 
 ## Estado
 
-Um probe implementado — **`AabbProbe`** (paridade de AABB, degrau M1).
+Probes implementados: **`AabbProbe`** e **`Vec3Probe`** (paridade de geometria, degrau M1).
+O mesmo contrato vale para qualquer probe novo (`ClipProbe`, `CollisionProbe`, …).
 
-### Como rodar o harness de AABB
+### Como rodar um harness
 
 ```sh
 # 1. casos (entrada nossa, versionada)
-python3 tools/parity/gen_aabb_cases.py --out tests/parity/aabb-0001.txt
+python3 tools/parity/gen_<harness>_cases.py --out tests/parity/<harness>-0001.txt
 
 # 2. os dois lados + diff (precisa de JDK 25 e da instalação do jogo)
-tools/parity/run_aabb.sh
+tools/parity/run_parity.sh <harness>
 ```
 
-Por padrão o script procura a instalação em `~/.minecraft`. Para outro launcher:
+`harness` ∈ `aabb`, `vec3`, `clip`, `blockpos`, `collision`. Por padrão o script
+procura a instalação em `~/.minecraft`; para outro launcher:
 
 ```sh
-MDC_MC_DIR=~/Games/UltimMC tools/parity/run_aabb.sh
+MDC_MC_DIR=~/Games/UltimMC tools/parity/run_parity.sh aabb
 ```
 
 O script: resolve o classpath → confere o **sha1 do jar contra `refs/minecraft.lock`**
-→ compila o probe → gera `.local/fixtures/aabb/vanilla.jsonl` → gera
-`build/parity/ours.jsonl` → `diff`. Sai 0 se idênticos, 1 com o diff.
+→ compila o probe → gera `.local/fixtures/<harness>/vanilla.jsonl` → gera
+`build/parity/<harness>.jsonl` → `diff`. Sai 0 se idênticos, 1 com o diff.
 
 **Resultado atual: 2.007 casos, 0 diferenças** — verificado com o jar do UltimMC
 (sha1 `e877b6a0…`, o mesmo do lock) e 56 bibliotecas resolvidas para linux/x86.

@@ -10,47 +10,18 @@
 //
 // A entrada são casos NOSSOS (podem ser versionados). A saída é derivada do
 // jogo quando gerada pelo probe Java — por isso nunca é versionada.
-#include <cinttypes>
-#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
+#include "jsonl.hpp"
 #include "mdc/core/aabb.hpp"
 
 namespace {
 
-void print_bits(double value) {
-    std::uint64_t bits = 0;
-    std::memcpy(&bits, &value, sizeof bits);
-    std::printf("\"%016" PRIx64 "\"", bits);
-}
-
-void print_vec(const mdc::core::Vec3& v) {
-    std::printf("[");
-    print_bits(v.x);
-    std::printf(",");
-    print_bits(v.y);
-    std::printf(",");
-    print_bits(v.z);
-    std::printf("]");
-}
-
-void print_box(const mdc::core::Aabb& b) {
-    std::printf("[");
-    print_bits(b.min_x());
-    std::printf(",");
-    print_bits(b.min_y());
-    std::printf(",");
-    print_bits(b.min_z());
-    std::printf(",");
-    print_bits(b.max_x());
-    std::printf(",");
-    print_bits(b.max_y());
-    std::printf(",");
-    print_bits(b.max_z());
-    std::printf("]");
-}
+using mdc::harness::print_bits;
+using mdc::harness::print_box;
+using mdc::harness::print_vec;
 
 } // namespace
 
@@ -64,7 +35,7 @@ int main(int argc, char** argv) {
 
     // Cabeçalho de proveniência: idêntico nos dois lados, para o diff valer na
     // transcrição inteira (a versão do jogo é registrada pelo runner).
-    std::printf("{\"schema\":1,\"harness\":\"aabb\"}\n");
+    mdc::harness::print_header("aabb");
 
     char line[1024];
     long index = 0;
