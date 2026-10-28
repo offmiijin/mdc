@@ -85,8 +85,9 @@ out_native=".local/fixtures/$harness"
 out_ours="build/parity"
 mkdir -p "$out_native" "$out_ours/classes"
 
-echo "==> 1/4 compilando o probe $probe (JDK $major)"
-javac -cp "$CP" -d "$out_ours/classes" "tools/oracle/java/dev/mdc/oracle/$probe.java"
+echo "==> 1/4 compilando os probes (JDK $major)"
+# O pacote inteiro, não só o probe pedido: há fontes compartilhadas (StubLevel).
+javac -cp "$CP" -d "$out_ours/classes" $(find tools/oracle/java -name '*.java')
 
 echo "==> 2/4 gerando a transcrição do jogo"
 CP="$CP:$out_ours/classes"

@@ -83,7 +83,17 @@ esse ponto pode cair 1 ULP **fora** da caixa (caso 1420). Grampear o resultado
 aos limites da caixa — que parece a coisa certa a fazer — diverge do original em
 1 bit. Paridade é reproduzir, não corrigir.
 
-**5. Constantes de limiar podem ser `float` promovido a `double`.** O limiar de
+**5. Ordem de resolução não é a "óbvia".** A colisão do original resolve **y
+primeiro** e depois o eixo de maior |movimento| entre x e z (empate vai para x).
+A ordem intuitiva (y, x, z) diverge em ~0,3% dos casos diagonais: o movimento de
+um eixo muda a sobreposição que decide o seguinte. Nenhuma ordem fixa explica o
+conjunto todo — a regra só apareceu com casos reduzidos a um sólido.
+
+**6. Sólido de espessura zero não colide.** `Shapes.create(AABB)` com `min == max`
+em algum eixo produz shape vazio; tratar como laje barra a queda de quem já está
+apoiado nela.
+
+**7. Constantes de limiar podem ser `float` promovido a `double`.** O limiar de
 `Vec3.normalize()` não é `1e-5` em double (`0x3EE4F8B588E368F1`) e sim
 `(double) 1e-5f` (`0x3EE4F8B580000000`) — 27 bits de mantissa a menos. Errar
 isso zera ou normaliza 147 de 2.020 casos, e nenhum teste de unidade escrito a

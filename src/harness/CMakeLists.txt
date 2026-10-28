@@ -6,11 +6,12 @@
 
 # Um alvo por harness, sempre `mdc-parity-<harness>` a partir de
 # `<harness>_parity.cpp` — o mesmo nome que `tools/parity/run_parity.sh` procura.
-foreach(harness aabb vec3 clip)
+foreach(harness aabb vec3 clip collision)
   add_executable(mdc-parity-${harness} ${harness}_parity.cpp)
 
   target_link_libraries(mdc-parity-${harness} PRIVATE
     mdc_core
+    mdc_phys
     mdc_warnings
     mdc_fp_strict)
 
