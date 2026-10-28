@@ -7,6 +7,7 @@
 
 add_library(mdc_core STATIC
   aabb.cpp
+  block_pos.cpp
   input.cpp
   tick_clock.cpp
   vec3.cpp)

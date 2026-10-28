@@ -49,7 +49,7 @@ SDL3 é opcional: se estiver instalado é usado; se não, o CMake baixa (`releas
 ```sh
 cmake --preset dev            # Debug, cliente + testes, avisos = erro
 cmake --build --preset dev
-ctest --preset dev            # 40 casos / 184 asserções
+ctest --preset dev            # 43 casos / 198 asserções
 ```
 
 Binários em `build/dev/bin/`. Sem GPU ou sem SDL:
@@ -120,6 +120,7 @@ MDC_MC_DIR=~/Games/UltimMC tools/parity/run_parity.sh vec3   # MultiMC/UltimMC/P
 | `vec3` | `add/subtract/scale/dot/cross/length/normalize/lerp` | ✅ 2.022 casos, 0 diferenças |
 | `clip` | `Aabb::clip` (raycast): entrada, saída, degenerado, empate de eixos | ✅ 2.030 casos, 0 diferenças |
 | `collision` | resolução de colisão: movimento aplicado contra N sólidos | ✅ **10.018 casos**, 0 diferenças |
+| `blockpos` | `BlockPos.containing` (floor com saturação do Java) e vizinhos | ✅ 2.013 casos, 0 diferenças |
 
 Contrato e armadilhas em [`tools/oracle/README.md`](tools/oracle/README.md).
 

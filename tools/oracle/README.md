@@ -57,8 +57,8 @@ argumento ou variável de ambiente).
 
 ## Estado
 
-Probes implementados: **`AabbProbe`**, **`Vec3Probe`**, **`ClipProbe`** e **`CollisionProbe`**
-(geometria e colisão, degrau M1). O `CollisionProbe` usa **`StubLevel`**, um `Level`
+Probes implementados: **`AabbProbe`**, **`Vec3Probe`**, **`ClipProbe`**, **`CollisionProbe`**
+e **`BlockPosProbe`** (geometria, colisão e coordenada de bloco — degrau M1). O `CollisionProbe` usa **`StubLevel`**, um `Level`
 mínimo que responde "nenhuma colisão de mundo": assim o harness compara o
 resolvedor do próprio jogo, e não uma reimplementação nossa.
 
