@@ -8,6 +8,7 @@ mdc_add_doctest()
 
 add_executable(mdc_tests
   aabb_test.cpp
+  atlas_test.cpp
   bit_storage_test.cpp
   block_test.cpp
   chunk_section_test.cpp
@@ -23,6 +24,7 @@ add_executable(mdc_tests
 
 target_link_libraries(mdc_tests PRIVATE
   mdc_core
+  mdc_render
   mdc_res
   mdc_level
   mdc_phys

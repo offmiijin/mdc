@@ -1,0 +1,4 @@
+# casos do harness de atlas — entrada nossa, pode ser versionada
+# gerado por tools/parity/gen_atlas_cases.py
+# <id do atlas>
+minecraft:blocks

@@ -62,7 +62,8 @@ argumento ou variável de ambiente).
 Probes implementados: **`AabbProbe`**, **`Vec3Probe`**, **`ClipProbe`**, **`CollisionProbe`**
 e **`BlockPosProbe`** (geometria, colisão e coordenada de bloco — degrau M1), e
 **`PaletteProbe`** (empacotamento de bits, paleta e container paletizado) e
-**`BlockStateProbe`** (contrato de estado de bloco) — degrau M2. O `CollisionProbe` usa **`StubLevel`**, um `Level` mínimo que responde
+**`BlockStateProbe`** (contrato de estado de bloco) e **`AtlasProbe`** (inventário
+de sprites do atlas) — degrau M2. O `CollisionProbe` usa **`StubLevel`**, um `Level` mínimo que responde
 "nenhuma colisão de mundo": assim o harness compara o resolvedor do próprio jogo,
 e não uma reimplementação nossa. O `PaletteProbe` não bootstrappa o jogo: usa um
 `IdMap` próprio sobre tokens internos, então nenhum identificador do original
@@ -78,7 +79,8 @@ python3 tools/parity/gen_<harness>_cases.py --out tests/parity/<harness>-0001.tx
 tools/parity/run_parity.sh <harness>
 ```
 
-`harness` ∈ `aabb`, `vec3`, `clip`, `blockpos`, `collision`, `palette`, `blockstate`. Por padrão o script
+`harness` ∈ `aabb`, `vec3`, `clip`, `blockpos`, `collision`, `palette`, `blockstate`,
+`atlas`. Por padrão o script
 procura a instalação em `~/.minecraft`; para outro launcher:
 
 ```sh
@@ -89,7 +91,7 @@ O script: resolve o classpath → confere o **sha1 do jar contra `refs/minecraft
 → compila o probe → gera `.local/fixtures/<harness>/vanilla.jsonl` → gera
 `build/parity/<harness>.jsonl` → `diff`. Sai 0 se idênticos, 1 com o diff.
 
-**Resultado atual: 7 harnesses, 19.187 casos, 0 diferenças** — verificado com o
+**Resultado atual: 8 harnesses, 19.188 casos, 0 diferenças** — verificado com o
 jar do UltimMC (sha1 `e877b6a0…`, o mesmo do lock) e 56 bibliotecas resolvidas
 para linux/x86.
 
@@ -102,6 +104,7 @@ para linux/x86.
 | `collision` | 10.018 |
 | `palette` | 1.059 |
 | `blockstate` | 38 |
+| `atlas` | 1 (1.310 sprites) |
 
 ### Instalação do jogo: dois layouts
 
@@ -164,5 +167,10 @@ O que ainda **não** existe:
   ordem e contrato em [`docs/PARITY.md`](../../docs/PARITY.md);
 - o `BlockStateProbe` é o único que precisa de `Bootstrap`: pega `System.out`
   antes, senão o layout de log do jogo embrulha a transcrição;
+- o `AtlasProbe` precisa de duas coisas da instalação do usuário que não vêm no
+  jar: o `assets/` extraído (`MDC_MC_ASSETS`, o runner extrai uma vez) e os
+  **nativos do LWJGL** (`MDC_LWJGL_NATIVES`), porque decodificar PNG passa por
+  `NativeImage`. Também desliga o appender do log4j, que escreve no mesmo
+  stdout;
 - harness de tick, física, worldgen;
 - qualquer harness que abra o jogo com janela (todos são headless).

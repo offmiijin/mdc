@@ -26,6 +26,7 @@ include(Dependencies)
 
 add_subdirectory(src/core)
 add_subdirectory(src/platform/resources)
+add_subdirectory(src/render)
 add_subdirectory(src/world/level)
 add_subdirectory(src/world/phys)
 
