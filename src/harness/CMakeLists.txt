@@ -21,10 +21,12 @@ endforeach()
 
 # Harnesses do M2 em diante não são de física: têm alvo próprio para deixar
 # explícito de qual módulo cada um depende.
-add_executable(mdc-parity-palette palette_parity.cpp)
-target_link_libraries(mdc-parity-palette PRIVATE
-  mdc_level
-  mdc_warnings
-  mdc_fp_strict)
-set_target_properties(mdc-parity-palette PROPERTIES
-  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+foreach(harness palette blockstate)
+  add_executable(mdc-parity-${harness} ${harness}_parity.cpp)
+  target_link_libraries(mdc-parity-${harness} PRIVATE
+    mdc_level
+    mdc_warnings
+    mdc_fp_strict)
+  set_target_properties(mdc-parity-${harness} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+endforeach()

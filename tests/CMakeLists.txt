@@ -9,6 +9,8 @@ mdc_add_doctest()
 add_executable(mdc_tests
   aabb_test.cpp
   bit_storage_test.cpp
+  block_test.cpp
+  chunk_section_test.cpp
   block_pos_test.cpp
   clip_test.cpp
   collision_test.cpp

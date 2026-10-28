@@ -6,6 +6,9 @@
 
 add_library(mdc_level STATIC
   bit_storage.cpp
+  block.cpp
+  chunk.cpp
+  chunk_section.cpp
   paletted_container.cpp)
 
 target_include_directories(mdc_level PUBLIC

@@ -1,0 +1,41 @@
+# casos do harness de estado de bloco — entrada nossa, pode ser versionada
+# gerado por tools/parity/gen_blockstate_cases.py
+# <id> [prop=valor ...]
+minecraft:air
+minecraft:stone
+minecraft:dirt
+minecraft:grass_block
+minecraft:grass_block snowy=true
+minecraft:sand
+minecraft:gravel
+minecraft:cobblestone
+minecraft:bedrock
+minecraft:coal_ore
+minecraft:iron_ore
+minecraft:oak_log
+minecraft:oak_log axis=x
+minecraft:oak_log axis=z
+minecraft:oak_planks
+minecraft:oak_leaves
+minecraft:oak_leaves distance=1
+minecraft:oak_leaves distance=7 persistent=true
+minecraft:oak_leaves waterlogged=true
+minecraft:oak_stairs
+minecraft:oak_stairs facing=east half=top
+minecraft:oak_stairs facing=west shape=inner_left
+minecraft:oak_stairs facing=south shape=outer_right waterlogged=true
+minecraft:stone_slab
+minecraft:stone_slab type=top
+minecraft:stone_slab type=double waterlogged=true
+minecraft:glass
+minecraft:sandstone
+minecraft:snow_block
+minecraft:ice
+minecraft:farmland
+minecraft:farmland moisture=7
+minecraft:water
+minecraft:water level=7
+minecraft:lava
+minecraft:lava level=15
+minecraft:glowstone
+minecraft:sea_lantern
